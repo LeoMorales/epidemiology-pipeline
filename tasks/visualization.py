@@ -98,7 +98,7 @@ def draw_deceases_lineplots(upstream, product, causeCodes):
     
     
 def draw_incidence_lineplots(upstream, product):
-    incidence_df = pandas.read_parquet(str(upstream['get-cause-incidence']))
+    incidence_df = pandas.read_parquet(str(upstream['get-subset-of-causes-incidence']))
     
     f, ax = plt.subplots(
         nrows=1,

@@ -48,7 +48,7 @@ tasks:
     product: _products/get/deceases-1991-2017-with-age-group-label.parquet
 
   - source: tasks.indicators.get_causes_incidence
-    name: get-cause-incidence
+    name: get-subset-of-causes-incidence
     product: _products/indicators/incidence-1991-2017.parquet
 
   - source: tasks.visualization.draw_incidence_lineplots
