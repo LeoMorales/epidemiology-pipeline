@@ -1,0 +1,69 @@
+tasks:
+  - source: tasks.raw.get_raw_dataframes
+    name: get-raw-dataframes
+    product:
+      1991-2000: _products/raw/deceases-1991-2000.parquet
+      2001-2014: _products/raw/deceases-2001-2014.parquet
+      2015-2017: _products/raw/deceases-2015-2017.parquet
+
+  # ['provincia_id', 'department_id', 'codigo_defuncion', 'sexo', 'edad', 'unidad_edad', 'year', 'mes_defuncion']
+  - source: tasks.clean.get_cleaned_data_1991_2017
+    name: get-cleaned-data-1991-2017
+    product: _products/clean/deceases-1991-2017.parquet
+
+  - source: tasks.get.get_deceases_by_year_by_sex_arg_all
+    name: get-deceases-1991-2017-by-year-by-sex-arg
+    product: _products/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
+
+  - source: tasks.get.get_deceases_selected_causes_by_year_by_sex_arg
+    name: get-deceases-selected-causes-1991-2017-by-year-by-sex-arg
+    product: _products/get/deceases-subset-of-causes-1991-2017-by-year-by-sex-arg.parquet
+
+  - source: tasks.visualization.draw_deceases_barplots
+    name: draw-deceases-barplots-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/visualization/deceases-barplots-1991-2017.png
+
+  - source: tasks.visualization.draw_deceases_lineplots
+    name: draw-deceases-lineplots-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/visualization/deceases-lineplots-1991-2017.png
+
+  - source: tasks.filter.filter_departamental_records
+    name: filter-departamental-records-1991-2017
+    product: _products/filter/deceases-departmentals-1991-2017.parquet
+
+  - source: tasks.filter.filter_records_for_specific_causes
+    name: filter-records-by-causes-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/filter/deceases-for-subset-of-causes-1991-2017.parquet
+
+  - source: tasks.get.get_deceases_with_age_group_label_1991_2017
+    name: get-deceases-with-age-group-label-1991-2017
+    params:
+      ageGroupMapping: "{{age_groups}}"
+    product: _products/get/deceases-1991-2017-with-age-group-label.parquet
+
+  - source: tasks.indicators.get_causes_incidence
+    name: get-cause-incidence
+    product: _products/indicators/incidence-1991-2017.parquet
+
+  - source: tasks.visualization.draw_incidence_lineplots
+    name: draw-incidence-lineplots-1991-2017
+    product: _products/visualization/incidence-lineplots-1991-2017.png
+
+  - source: tasks.visualization.draw_causes_deceases_by_age_group_and_sex
+    name: draw-deceases-by-age-group-and-sex-subset-of-causes
+    params:
+      categoryDisplayOrder: "{{age_category_causes_display_order}}"
+      causeName: "{{cause_name}}"
+    product: _products/visualization/deceases-by-age-group-barplots-1991-2017-subset-of-causes.png
+
+  - source: tasks.visualization.draw_all_deceases_by_age_group_and_sex
+    name: draw-deceases-by-age-group-and-sex-all-causes
+    params:
+      categoryDisplayOrder: "{{age_category_all_display_order}}"
+    product: _products/visualization/deceases-by-age-group-barplots-1991-2017-all-causes.png
