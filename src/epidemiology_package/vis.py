@@ -1,5 +1,8 @@
 import numpy
 from matplotlib import pyplot as plt
+import matplotlib as mpl
+import seaborn
+
 
 def draw_barplot(
         data, ax,
@@ -171,3 +174,69 @@ def draw_lineplot(
     
     ax.spines[['right', 'top']].set_visible(False)
     return ax
+
+
+def draw_stacked_plot(
+        sorted_plot_data,
+        only_save=False,
+        output_file='delete.png',
+        title='Stacked barplot',
+        colors=['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f']
+    ):
+    seaborn.set()
+    font_color = '#525252'
+    csfont = {'fontname':'Calibri'} # title font
+    hfont = {'fontname':'Calibri'} # main font
+    
+
+    ax = sorted_plot_data\
+        .plot.barh(
+            align='center',
+            stacked=True,
+            figsize=(10, .45*len(sorted_plot_data)),
+            color=colors)
+
+    title = plt.title(
+        title,
+        pad=60,
+        fontsize=18,
+        color=font_color,
+        **csfont)
+
+    title.set_position([.5, 1.05])
+
+    # Adjust the subplot so that the title would fit
+    plt.subplots_adjust(top=0.8, left=0.26)
+
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+        label.set_fontsize(15)
+
+    plt.xticks(color=font_color, **hfont)
+    plt.yticks(color=font_color, **hfont)
+
+    data_n_cols = len(sorted_plot_data.columns)
+    n_col_legend = (
+        int(data_n_cols / 2) 
+        if data_n_cols % 2 == 0
+        else (data_n_cols // 2) +1 )
+    print(n_col_legend)
+    legend = plt.legend(loc='center',
+           frameon=False,
+           bbox_to_anchor=(0., 1., 1., .102), 
+           mode='expand', 
+           ncol=n_col_legend, 
+           borderaxespad=-.46,
+           prop={'size': 15, 'family':'Calibri'})
+
+    for text in legend.get_texts():
+        plt.setp(text, color=font_color) # legend font color
+
+    plt.tight_layout()
+
+    if only_save:
+        plt.savefig(output_file)
+        plt.close()
+        return None
+    else:
+        plt.show()
+        return ax
