@@ -3,8 +3,23 @@ from epidemiology_package import cleanning
 from epidemiology_package import vis
 
 
-def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeName):
+def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeName, criterion):
+    '''
+    Crear un gráfico de barras apiladas.
+    Una pila por año.
+    Con los códigos indicados en el agrupamiento.
     
+    Args:
+        codesGrouping (dict): Se utiliza para reescribir las etiquetas y
+            crear grupos de causas. Por ejemplo, asignar la etiqueta `Q00-Q99`
+            al grupo de códigos Q00, Q01, ..., Q99.
+            
+        codeColors (list): Contiene el color asignado a cada clave en codesGrouping.
+            TODO: podría ser un dict
+        
+        causeName (str): Nombre representativo del conjunto de causas (códigos).
+            Puede ser por ejemplo EPOF, Alz, etc.
+    '''
     DECEASE_CODE_COL = 'codigo_defuncion'
     AGGR_DECEASE_CODE_COL = 'codigo_defuncion_aggr'
     PERIOD_COL = 'year'
@@ -21,6 +36,14 @@ def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeNam
         )
     #.astype(str).copy()
 
+    filterSelector = {
+        'all': [1, 2],
+        'male': [1],
+        'female': [2],
+    }
+    sexSelection = filterSelector[criterion] 
+    df_causes = df_causes[df_causes['sexo'].isin(sexSelection)]
+    
     # contar
     causes_counts_df = df_causes\
         [['provincia_id', PERIOD_COL, AGGR_DECEASE_CODE_COL]]\
@@ -65,5 +88,5 @@ def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeNam
         sorted_plot_data,
         only_save=True,
         output_file=str(product),
-        title=f"{causeName} deceases by codes",
+        title=f"{causeName} deceases by codes ({criterion})",
         colors=codeColors)

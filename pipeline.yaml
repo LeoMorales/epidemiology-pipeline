@@ -69,9 +69,11 @@ tasks:
     product: _products/visualization/deceases-by-age-group-barplots-1991-2017-all-causes.png
 
   - source: tasks.vis.stacked_barplot.draw_codes_in_stacked
-    name: draw-codes-in-stacked-barplot
+    name: draw-codes-in-stacked-barplot-[[criterion]]
     params:
       codesGrouping: "{{codes_grouping}}"
       codeColors: "{{code_colors}}"
       causeName: "{{cause_name}}"
-    product: _products/vis/codes-stacked-barplot.png
+    product: _products/vis/codes-stacked-barplot-[[criterion]].png
+    grid:
+      criterion: [all, male, female]

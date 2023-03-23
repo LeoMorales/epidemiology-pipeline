@@ -98,13 +98,16 @@ def draw_deceases_lineplots(upstream, product, causeCodes):
     
     
 def draw_incidence_lineplots(upstream, product):
+    ''' Dibuja las incidencias totales, varones y mujeres en dos graficos
+    lado a lado, uno para las incidencias generales y otro para las locales.
+    '''
     incidence_df = pandas.read_parquet(str(upstream['get-subset-of-causes-incidence']))
     
     f, ax = plt.subplots(
         nrows=1,
         ncols=2,
         sharey=True,
-        figsize=(30, 16))
+        figsize=(32, 12))
 
     axes = ax.flatten()
 
@@ -114,7 +117,7 @@ def draw_incidence_lineplots(upstream, product):
         incidence_df['causes_incidence_female'].values,
         ax=axes[0],
         aSerieLabel='Causes incidence',
-        bSerieLabel='Subset of causes incidence in females',
+        bSerieLabel='Subset of causes\nincidence in females',
         aSerieColor="grey",
         bSerieColor = '#f46d43',
         diffColor='white',
@@ -129,7 +132,7 @@ def draw_incidence_lineplots(upstream, product):
         incidence_df['causes_incidence_male'].values,
         ax=axes[0],
         aSerieLabel='',
-        bSerieLabel='Subset of causes incidence in males',
+        bSerieLabel='Subset of causes\nincidence in males',
         aSerieColor = '#f46d43',
         bSerieColor = '#5bc0de',
         diffColor='#490F62',

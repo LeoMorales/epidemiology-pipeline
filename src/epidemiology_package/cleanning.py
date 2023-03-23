@@ -1,5 +1,12 @@
 import pandas
 
+SEX_CODE_MAPPING = {
+    '1': 'varon',
+    '2': 'mujer',
+    '9': 'indeterminado',
+    '3': 'indeterminado',
+    '99': 'indeterminado'
+}
 
 def get_sex_correspondence(sex_ids_list):
     """
@@ -7,18 +14,11 @@ def get_sex_correspondence(sex_ids_list):
         sex_ids_list (array): arreglo de identificadores de sexo
     """
     # create column with sex description in text
-    sex_mapping = {
-        '1': 'varon',
-        '2': 'mujer',
-        '9': 'indeterminado',
-        '3': 'indeterminado',
-        '99': 'indeterminado'
-    }
 
     return \
         pandas.Series(sex_ids_list)\
             .apply(
-                lambda sex_id: sex_mapping.get(str(sex_id).strip())
+                lambda sex_id: SEX_CODE_MAPPING.get(str(sex_id).strip())
             )
 
 def get_age_in_years(ageSerie, ageCategorySerie):
