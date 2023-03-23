@@ -181,7 +181,9 @@ def draw_stacked_plot(
         only_save=False,
         output_file='delete.png',
         title='Stacked barplot',
-        colors=['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f']
+        colors=['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f'],
+        legend_n_rows=2,
+        legend_font_size=12
     ):
     seaborn.set()
     font_color = '#525252'
@@ -216,17 +218,18 @@ def draw_stacked_plot(
 
     data_n_cols = len(sorted_plot_data.columns)
     n_col_legend = (
-        int(data_n_cols / 2) 
-        if data_n_cols % 2 == 0
-        else (data_n_cols // 2) +1 )
+        int(data_n_cols / legend_n_rows) 
+        if data_n_cols % legend_n_rows == 0
+        else (data_n_cols // legend_n_rows) +1 )
     print(n_col_legend)
-    legend = plt.legend(loc='center',
-           frameon=False,
-           bbox_to_anchor=(0., 1., 1., .102), 
-           mode='expand', 
-           ncol=n_col_legend, 
-           borderaxespad=-.46,
-           prop={'size': 15, 'family':'Calibri'})
+    legend = plt.legend(
+        loc='center',
+        frameon=False,
+        bbox_to_anchor=(0., 1., 1., .102), 
+        mode='expand', 
+        ncol=n_col_legend, 
+        borderaxespad=-.46,
+        prop={'size': legend_font_size, 'family':'Calibri'})
 
     for text in legend.get_texts():
         plt.setp(text, color=font_color) # legend font color

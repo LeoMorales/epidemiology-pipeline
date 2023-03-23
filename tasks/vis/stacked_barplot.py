@@ -89,4 +89,6 @@ def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeNam
         only_save=True,
         output_file=str(product),
         title=f"{causeName} deceases by codes ({criterion})",
-        colors=codeColors)
+        colors=codeColors,
+        legend_n_rows=2,
+        legend_font_size=14)
