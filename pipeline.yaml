@@ -23,13 +23,13 @@ tasks:
     name: draw-deceases-barplots-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
-    product: _products/visualization/deceases-barplots-1991-2017.png
+    product: _products/visualization/barplots/deceases-barplots-1991-2017.png
 
   - source: tasks.visualization.draw_deceases_lineplots
     name: draw-deceases-lineplots-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
-    product: _products/visualization/deceases-lineplots-1991-2017.png
+    product: _products/visualization/lineplots/deceases-lineplots-1991-2017.png
 
   - source: tasks.filter.filter_departamental_records
     name: filter-departamental-records-1991-2017
@@ -53,20 +53,20 @@ tasks:
 
   - source: tasks.visualization.draw_incidence_lineplots
     name: draw-incidence-lineplots-1991-2017
-    product: _products/visualization/incidence-lineplots-1991-2017.png
+    product: _products/visualization/lineplots/incidence-lineplots-1991-2017.png
 
   - source: tasks.visualization.draw_causes_deceases_by_age_group_and_sex
     name: draw-deceases-by-age-group-and-sex-subset-of-causes
     params:
       categoryDisplayOrder: "{{age_category_causes_display_order}}"
       causeName: "{{cause_name}}"
-    product: _products/visualization/deceases-by-age-group-barplots-1991-2017-subset-of-causes.png
+    product: _products/visualization/barplots/deceases-by-age-group-barplots-1991-2017-subset-of-causes.png
 
   - source: tasks.visualization.draw_all_deceases_by_age_group_and_sex
     name: draw-deceases-by-age-group-and-sex-all-causes
     params:
       categoryDisplayOrder: "{{age_category_all_display_order}}"
-    product: _products/visualization/deceases-by-age-group-barplots-1991-2017-all-causes.png
+    product: _products/visualization/barplots/deceases-by-age-group-barplots-1991-2017-all-causes.png
 
   - source: tasks.vis.stacked_barplot.draw_codes_in_stacked
     name: draw-codes-in-stacked-barplot-[[criterion]]
@@ -74,6 +74,27 @@ tasks:
       codesGrouping: "{{codes_grouping}}"
       codeColors: "{{code_colors}}"
       causeName: "{{cause_name}}"
-    product: _products/vis/codes-stacked-barplot-[[criterion]].png
+    product: _products/visualization/stacked/codes-stacked-barplot-[[criterion]].png
     grid:
       criterion: [all, male, female]
+
+  # rates:
+  - source: tasks.rates.get_age_grouping_rates
+    name: get-age-grouping-rates
+    params:
+      causesCodes: "{{causes_codes}}"
+    product: _products/rates/age-grouping-rates.parquet
+
+  - source: tasks.visualization.draw_age_grouping_rates_lineplot
+    name: draw-age-grouping-rates-lineplot
+    product: _products/visualization/lineplots/age-grouping-rates-lineplot.png
+
+  # report:
+  - source: tasks.report.create_report
+    name: create-report
+    params:
+      causeName: "{{cause_name}}"
+      causesCodes: "{{causes_codes}}"
+      ageCategoryCauses: "{{age_category_causes_display_order}}"
+      codesGrouping: "{{codes_grouping}}"
+    product: _products/report/reporte.pdf

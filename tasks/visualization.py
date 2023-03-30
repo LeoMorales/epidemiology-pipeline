@@ -80,13 +80,13 @@ def draw_deceases_lineplots(upstream, product, causeCodes):
     vis.draw_lineplot_comparission(
         year, male, female,
         ax=axes[0],
-        displayValues=True)
+        displayValues=False)
     axes[0].set_title("Total")
     vis.draw_lineplot_comparission(
         year, male_in_subset_of_causes, female_in_subset_of_causes,
         ax=axes[1],
         diffColor="#490F62",
-        displayValues=True)
+        displayValues=False)
     
     cause_codes_text = ', '.join([str(code) for code in causeCodes[:10]])
     if len(causeCodes) > 10:
@@ -104,10 +104,11 @@ def draw_incidence_lineplots(upstream, product):
     incidence_df = pandas.read_parquet(str(upstream['get-subset-of-causes-incidence']))
     
     f, ax = plt.subplots(
-        nrows=1,
-        ncols=2,
+        nrows=2,
+        ncols=1,
+        sharex=True,
         sharey=True,
-        figsize=(32, 12))
+        figsize=(8, 14))
 
     axes = ax.flatten()
 
@@ -175,7 +176,7 @@ def draw_incidence_lineplots(upstream, product):
         displayValues=False,
     )
 
-    plt.savefig(str(product), dpi=300)
+    plt.savefig(str(product), dpi=300, bbox_inches='tight')
     plt.close()
 
 def draw_causes_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrder, causeName):
@@ -256,3 +257,45 @@ def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrd
         ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
     g.savefig(str(product), dpi=300)
+
+
+def draw_age_grouping_rates_lineplot(upstream, product):
+    rates_df = pandas.read_parquet(str(upstream["get-age-grouping-rates"]))
+    rates_df_wide = rates_df.pivot(index='year', columns='age_group', values='rate_1000')
+    rates_df_wide.index.name = None
+    rates_df_wide.columns.name = None
+    
+    col_order = [
+        '0 - 5',
+        '6 - 15',
+        '16 - 35',
+        '36 - 45',
+        '46 - 55',
+        '56 - 65',
+        '66 - 75',
+        '76 - 85',
+        '>85'
+    ]
+    
+    rates_df_wide = rates_df_wide[col_order]
+    plt.style.use('fivethirtyeight')
+    f, ax = plt.subplots(figsize=(18, 12))
+
+    lp = seaborn.lineplot(data=rates_df_wide, ax=ax)
+
+    # labels = [
+    #     label.get_text()
+    #     for label
+    #     in list(ax.get_legend().get_texts())
+    # ]
+
+    plt.legend(
+        title="Age groups (ranges in years)",
+        bbox_to_anchor=(1.01, .8),
+        borderaxespad=0)
+
+    ax.spines[['right', 'top']].set_visible(False)
+
+    plt.xticks(fontsize=12)
+    plt.savefig(str(product), dpi=300, bbox_inches='tight')
+    plt.close();

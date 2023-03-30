@@ -95,14 +95,14 @@ def draw_lineplot_comparission(
         legend_label_xpos,
         aSerie[-1] - (aSerie[-1] * .01),
         aSerieLabel,
-        size=16,
+        size=12,
         color=aSerieColor,
         wrap=True)
     ax.text(
         legend_label_xpos,
         bSerie[-1] - (bSerie[-1] * .01),
         bSerieLabel,
-        size=16,
+        size=12,
         color=bSerieColor,
         wrap=True)
 
@@ -140,7 +140,7 @@ def draw_lineplot_comparission(
 
     # Rotates and right-aligns the x labels so they don't crowd each other.
     ax.set_xticks(xSerie)
-    ax.set_xticklabels(xSerie, rotation=45, ha='right')
+    ax.set_xticklabels(xSerie, rotation=45, ha='center')
     
     ax.grid(True, color="lightgrey", alpha=0.5)
 
@@ -205,10 +205,10 @@ def draw_stacked_plot(
         color=font_color,
         **csfont)
 
-    title.set_position([.5, 1.05])
+    title.set_position([.5, .85])
 
     # Adjust the subplot so that the title would fit
-    plt.subplots_adjust(top=0.8, left=0.26)
+    #plt.subplots_adjust(top=0.8, left=0.26)
 
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(15)
@@ -222,22 +222,30 @@ def draw_stacked_plot(
         if data_n_cols % legend_n_rows == 0
         else (data_n_cols // legend_n_rows) +1 )
     print(n_col_legend)
-    legend = plt.legend(
-        loc='center',
-        frameon=False,
-        bbox_to_anchor=(0., 1., 1., .102), 
-        mode='expand', 
-        ncol=n_col_legend, 
-        borderaxespad=-.46,
-        prop={'size': legend_font_size, 'family':'Calibri'})
+    # legend = plt.legend(
+    #     loc='center',
+    #     frameon=False,
+    #     bbox_to_anchor=(0., 0., 0., .102), 
+    #     mode='expand', 
+    #     ncol=n_col_legend, 
+    #     borderaxespad=0,
+    #     prop={'size': legend_font_size, 'family':'Calibri'})
 
+    legend = plt.legend(
+        loc='upper center',
+        bbox_to_anchor=(0.5, -0.05),
+        frameon=False,
+        fancybox=True,
+        ncol=n_col_legend,
+        prop={'size': legend_font_size, 'family':'Calibri'}
+    )
     for text in legend.get_texts():
         plt.setp(text, color=font_color) # legend font color
 
-    plt.tight_layout()
+    #plt.tight_layout()
 
     if only_save:
-        plt.savefig(output_file)
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.close()
         return None
     else:
