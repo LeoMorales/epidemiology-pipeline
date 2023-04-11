@@ -1,10 +1,14 @@
 from epidemiology_package.report import Report
+from epidemiology_package import utils
+import pandas
 
-def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses, codesGrouping):
+
+def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     
     causesCodes_used = ', '.join(causesCodes)
     ageCategoryCauses_used = ', '.join(ageCategoryCauses)
-    codesGrouping_used = '\n'.join([f'<li>"{k}" -> {v}</li>' for k, v in codesGrouping.items()])
+    _codesGrouping = utils.get_codes_categorization(pandas.Series(causesCodes))
+    codesGrouping_used = '\n'.join([f'<li>"{k}" -> {v}</li>' for k, v in _codesGrouping.items()])
     codesGrouping_used = f'<ul>"{codesGrouping_used}</ul>'
     
     report = Report(
@@ -94,6 +98,7 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses, 
     
     report.add_section(
         title='Tasas anuales por grupo etario',
+        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos",
         figure=str(upstream['draw-age-grouping-rates-lineplot'])
     
     )

@@ -259,7 +259,7 @@ def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrd
     g.savefig(str(product), dpi=300)
 
 
-def draw_age_grouping_rates_lineplot(upstream, product):
+def draw_age_grouping_rates_lineplot(upstream, product, ageCategoriesOrder):
     rates_df = pandas.read_parquet(str(upstream["get-age-grouping-rates"]))
     rates_df_wide = rates_df.pivot(index='year', columns='age_group', values='rate_1000')
     rates_df_wide.index.name = None

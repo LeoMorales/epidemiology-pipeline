@@ -4,6 +4,7 @@ scripts
 *__pycache__*
 
 task_notebooks
-env_*
+
+_env_files
 
 *_playground

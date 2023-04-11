@@ -1,9 +1,10 @@
 import pandas
 from epidemiology_package import cleanning
 from epidemiology_package import vis
+from epidemiology_package import utils
 
 
-def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeName, criterion):
+def draw_codes_in_stacked(upstream, product, codeColors, causeName, criterion):
     '''
     Crear un gráfico de barras apiladas.
     Una pila por año.
@@ -27,11 +28,13 @@ def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeNam
     df_causes = pandas.read_parquet(
         str(upstream['filter-records-by-causes-1991-2017']))
 
+    _codesGrouping = utils.get_codes_categorization(
+        df_causes[DECEASE_CODE_COL].unique())
     # reescribir (para agrupar)
     df_causes[AGGR_DECEASE_CODE_COL] = \
         cleanning.rewrite_codes_according_to_grouping(
             values=df_causes[DECEASE_CODE_COL],
-            codesGrouping=codesGrouping,
+            codesGrouping=_codesGrouping,
             defaultValue='others'
         )
     #.astype(str).copy()
@@ -90,5 +93,5 @@ def draw_codes_in_stacked(upstream, product, codesGrouping, codeColors, causeNam
         output_file=str(product),
         title=f"{causeName} deceases by codes ({criterion})",
         colors=codeColors,
-        legend_n_rows=len(codesGrouping)//2,
+        legend_n_rows=len(_codesGrouping)//2 if len(_codesGrouping) > 1 else 1,
         legend_font_size=14)

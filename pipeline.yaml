@@ -71,7 +71,6 @@ tasks:
   - source: tasks.vis.stacked_barplot.draw_codes_in_stacked
     name: draw-codes-in-stacked-barplot-[[criterion]]
     params:
-      codesGrouping: "{{codes_grouping}}"
       codeColors: "{{code_colors}}"
       causeName: "{{cause_name}}"
     product: _products/visualization/stacked/codes-stacked-barplot-[[criterion]].png
@@ -87,6 +86,8 @@ tasks:
 
   - source: tasks.visualization.draw_age_grouping_rates_lineplot
     name: draw-age-grouping-rates-lineplot
+    params:
+      ageCategoriesOrder: "{{age_category_causes_display_order}}"
     product: _products/visualization/lineplots/age-grouping-rates-lineplot.png
 
   # report:
@@ -96,5 +97,4 @@ tasks:
       causeName: "{{cause_name}}"
       causesCodes: "{{causes_codes}}"
       ageCategoryCauses: "{{age_category_causes_display_order}}"
-      codesGrouping: "{{codes_grouping}}"
     product: _products/report/reporte.pdf
