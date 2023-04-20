@@ -11,12 +11,12 @@ tasks:
     name: get-cleaned-data-1991-2017
     product: _products/clean/deceases-1991-2017.parquet
 
-  - source: tasks.get.get_deceases_by_year_by_sex_arg_all
-    name: get-deceases-1991-2017-by-year-by-sex-arg
+  - source: tasks.get.aggr_deceases_by_year_by_sex_arg_all
+    name: aggr-deceases-1991-2017-by-year-by-sex-arg
     product: _products/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
 
-  - source: tasks.get.get_deceases_selected_causes_by_year_by_sex_arg
-    name: get-deceases-selected-causes-1991-2017-by-year-by-sex-arg
+  - source: tasks.get.aggr_deceases_selected_causes_by_year_by_sex_arg
+    name: aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg
     product: _products/get/deceases-subset-of-causes-1991-2017-by-year-by-sex-arg.parquet
 
   - source: tasks.visualization.draw_deceases_barplots
@@ -36,7 +36,7 @@ tasks:
     product: _products/filter/deceases-departmentals-1991-2017.parquet
 
   - source: tasks.filter.filter_records_for_specific_causes
-    name: filter-records-by-causes-1991-2017
+    name: filter-deceases-for-subset-of-causes-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
     product: _products/filter/deceases-for-subset-of-causes-1991-2017.parquet
@@ -89,6 +89,14 @@ tasks:
     params:
       ageCategoriesOrder: "{{age_category_causes_display_order}}"
     product: _products/visualization/lineplots/age-grouping-rates-lineplot.png
+
+  - source: tasks.csmr.calculate_csmr_per_province
+    name: csmr-per-province
+    product: _products/csmr/csmr-per-province.parquet
+
+  - source: tasks.csmr.draw_csmr_heatmap_provincial
+    name: draw-csmr-heatmap-provincial
+    product: _products/csmr/csmr-heatmap-provincial.png
 
   # report:
   - source: tasks.report.create_report

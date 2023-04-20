@@ -99,8 +99,13 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     report.add_section(
         title='Tasas anuales por grupo etario',
         text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos",
-        figure=str(upstream['draw-age-grouping-rates-lineplot'])
+        figure=str(upstream['draw-age-grouping-rates-lineplot'])    
+    )
     
+    report.add_section(
+        title='Tasa de mortallidad por causas espacíficas (CSMR).',
+        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos en cada provincia",
+        figure=str(upstream['draw-csmr-heatmap-provincial'])
     )
 
     # save:

@@ -2,9 +2,9 @@ import pandas
 
 def get_causes_incidence(upstream, product):
     df_all_deceases = pandas.read_parquet(
-        str(upstream['get-deceases-1991-2017-by-year-by-sex-arg']))
+        str(upstream['aggr-deceases-1991-2017-by-year-by-sex-arg']))
     df_causes_subset_deceases = pandas.read_parquet(
-        str(upstream['get-deceases-selected-causes-1991-2017-by-year-by-sex-arg']))
+        str(upstream['aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg']))
 
     # 3. combine
     df = pandas.merge(

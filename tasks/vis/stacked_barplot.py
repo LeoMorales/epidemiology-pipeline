@@ -26,7 +26,7 @@ def draw_codes_in_stacked(upstream, product, codeColors, causeName, criterion):
     PERIOD_COL = 'year'
     # leer
     df_causes = pandas.read_parquet(
-        str(upstream['filter-records-by-causes-1991-2017']))
+        str(upstream['filter-deceases-for-subset-of-causes-1991-2017']))
 
     _codesGrouping = utils.get_codes_categorization(
         df_causes[DECEASE_CODE_COL].unique())

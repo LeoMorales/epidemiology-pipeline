@@ -129,7 +129,7 @@ def get_deceases_by_year_by_sex_arg(upstream, product, causeCodes):
     output_df.to_parquet(str(product))
 
 
-def get_deceases_by_year_by_sex_arg_all(upstream, product):
+def aggr_deceases_by_year_by_sex_arg_all(upstream, product):
     """
     Create dataset:
     #    year  deceases_indeterminado  deceases_mujer   deceases_varon  
@@ -197,8 +197,8 @@ def get_deceases_by_year_by_sex_arg_all(upstream, product):
     df_deceases_all.to_parquet(str(product))
 
 
-def get_deceases_selected_causes_by_year_by_sex_arg(upstream, product):
-    df_causes_subset = pandas.read_parquet(str(upstream['filter-records-by-causes-1991-2017']))
+def aggr_deceases_selected_causes_by_year_by_sex_arg(upstream, product):
+    df_causes_subset = pandas.read_parquet(str(upstream['filter-deceases-for-subset-of-causes-1991-2017']))
     
     df_causes_subset['sex_correspondence'] = \
         cleanning.get_sex_correspondence(df_causes_subset['sexo'])

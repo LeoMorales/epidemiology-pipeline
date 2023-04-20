@@ -8,9 +8,9 @@ from matplotlib import ticker
 def draw_deceases_barplots(upstream, product, causeCodes):
     
     df_all_deceases = pandas.read_parquet(
-        str(upstream["get-deceases-1991-2017-by-year-by-sex-arg"]))
+        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"]))
     df_deceases_of_interest = pandas.read_parquet(
-        str(upstream["get-deceases-selected-causes-1991-2017-by-year-by-sex-arg"]))
+        str(upstream["aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg"]))
     
     # 3. combine
     df = pandas.merge(
@@ -53,9 +53,9 @@ def draw_deceases_barplots(upstream, product, causeCodes):
 def draw_deceases_lineplots(upstream, product, causeCodes):
     
     df_all_deceases = pandas.read_parquet(
-        str(upstream["get-deceases-1991-2017-by-year-by-sex-arg"]))
+        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"]))
     df_deceases_of_interest = pandas.read_parquet(
-        str(upstream["get-deceases-selected-causes-1991-2017-by-year-by-sex-arg"]))
+        str(upstream["aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg"]))
     
     # 3. combine
     df = pandas.merge(
@@ -183,7 +183,7 @@ def draw_causes_deceases_by_age_group_and_sex(upstream, product, categoryDisplay
     """
     Dibuja un grafico de barras categorizadas por grupo etario.
     """
-    df = pandas.read_parquet(str(upstream["filter-records-by-causes-1991-2017"]))
+    df = pandas.read_parquet(str(upstream["filter-deceases-for-subset-of-causes-1991-2017"]))
 
     df['sex'] = cleanning.get_sex_correspondence(df['sexo'])
     counts_df = \
