@@ -168,8 +168,8 @@ def draw_incidence_lineplots(upstream, product):
     plt.close()
 
 
-def draw_causes_deceases_by_age_group_and_sex(
-    upstream, product, categoryDisplayOrder, causeName
+def draw_barchart_for_deceases_from_specific_causes_by_sex_and_grouped_by_age(
+    upstream, product, categoryDisplayOrder, causeName, catplotArgs
 ):
     """
     Dibuja un grafico de barras categorizadas por grupo etario.
@@ -185,13 +185,14 @@ def draw_causes_deceases_by_age_group_and_sex(
         .count()
         .reset_index()
         .rename(columns={"provincia_id": "count"})
-        .replace({"mujer": "female", "varon": "male"})
+        .replace({"mujer": "Female", "varon": "Male"})
     )
 
     counts_df = counts_df[~(counts_df["sex"] == "indeterminado")]
 
     # Draw a nested barplot by age group and sex
     seaborn.set_theme(style="whitegrid")
+    catplotPalette = catplotArgs["palette_two_soft"]
     g = seaborn.catplot(
         data=counts_df,
         kind="bar",
@@ -201,7 +202,7 @@ def draw_causes_deceases_by_age_group_and_sex(
         alpha=0.6,
         height=6,
         order=categoryDisplayOrder,
-        palette=["orange", "blue"],
+        palette=catplotPalette,
     )
 
     g.despine(left=True)
@@ -215,7 +216,9 @@ def draw_causes_deceases_by_age_group_and_sex(
     g.savefig(str(product), dpi=300)
 
 
-def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrder):
+def draw_barchart_for_all_deceases_by_sex_and_grouped_by_age(
+    upstream, product, categoryDisplayOrder, catplotArgs
+):
     """
     Dibuja todos los fallecimientos de la Argentina en el período de estudio en un
     grafico de barras categorizadas por grupo etario.
@@ -231,14 +234,21 @@ def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrd
         .count()
         .reset_index()
         .rename(columns={"provincia_id": "count"})
-        .replace({"mujer": "female", "varon": "male"})
+        .replace({"mujer": "Female", "varon": "Male"})
     )
-    # renombramos provincia_id pero podría haber sido cualquiera de las columnas
 
+    # renombramos provincia_id pero podría haber sido cualquiera de las columnas
     counts_df = counts_df[~(counts_df["sex"] == "indeterminado")]
+
+    #   age_group     sex   count
+    # 1     0 - 5  female  151127
+    # 2     0 - 5    male  193697
+    # 3   16 - 35  female  103172
+    # 4   ...
 
     # Draw a nested barplot by age group and sex
     seaborn.set_theme(style="whitegrid")
+    catplotPalette = catplotArgs["palette_two"]
     g = seaborn.catplot(
         data=counts_df,
         kind="bar",
@@ -248,7 +258,7 @@ def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrd
         alpha=0.6,
         height=6,
         order=categoryDisplayOrder,
-        palette=["orange", "blue"],
+        palette=catplotPalette,
     )
 
     g.despine(left=True)
@@ -257,6 +267,77 @@ def draw_all_deceases_by_age_group_and_sex(upstream, product, categoryDisplayOrd
     g.ax.set_xticklabels(categoryDisplayOrder, size=ticklabelsSize)
     g.legend.set_title("")
     g.fig.suptitle("Deceases in Argentina by age group and sex (1991-2017)")
+    g.ax.get_yaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ","))
+    )
+
+    g.savefig(str(product), dpi=300)
+
+
+def draw_barchart_for_deceases_by_sex_and_grouped_by_age(
+    upstream, product, categoryDisplayOrder, causeName, catplotArgs
+):
+    """
+    Dibuja todos los fallecimientos de la Argentina en el período de estudio en un
+    grafico de barras categorizadas por grupo etario.
+    """
+    df = pandas.read_parquet(
+        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+    )
+    df_specific_causes = pandas.read_parquet(
+        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+    )
+
+    df["sex"] = cleanning.get_sex_correspondence(df["sexo"])
+    counts_df = (
+        df[["provincia_id", "age_group", "sex"]]
+        .groupby(["age_group", "sex"])
+        .count()
+        .reset_index()
+        .rename(columns={"provincia_id": "count"})
+        .replace({"mujer": "Female", "varon": "Male"})
+    )
+    # renombramos provincia_id pero podría haber sido cualquiera de las columnas
+    counts_df = counts_df[~(counts_df["sex"] == "indeterminado")]
+
+    df_specific_causes["sex"] = cleanning.get_sex_correspondence(
+        df_specific_causes["sexo"]
+    )
+    counts_df_specific_causes = (
+        df_specific_causes[["provincia_id", "age_group", "sex"]]
+        .groupby(["age_group", "sex"])
+        .count()
+        .reset_index()
+        .rename(columns={"provincia_id": "count"})
+        .replace({"mujer": f"Female ({causeName})", "varon": f"Male ({causeName})"})
+    )
+    counts_df_specific_causes = counts_df_specific_causes[
+        ~(counts_df_specific_causes["sex"] == "indeterminado")
+    ]
+
+    # Draw a nested barplot by age group and sex
+    catplotData = counts_df.append(counts_df_specific_causes).sort_values(by="sex")
+    catplotPalette = catplotArgs["palette_four"]
+    seaborn.set_theme(style="whitegrid")
+    g = seaborn.catplot(
+        data=catplotData,
+        kind="bar",
+        x="age_group",
+        y="count",
+        hue="sex",
+        hue_order=["Female", f"Female ({causeName})", "Male", f"Male ({causeName})"],
+        alpha=0.6,
+        height=8,
+        order=categoryDisplayOrder,
+        palette=catplotPalette,
+    )
+
+    g.despine(left=True)
+    g.set_axis_labels("", "Deceases (u)")
+    ticklabelsSize = 12 if len(categoryDisplayOrder) < 5 else 8
+    g.ax.set_xticklabels(categoryDisplayOrder, size=ticklabelsSize)
+    g.legend.set_title("")
+    g.fig.suptitle("Deceases in Argentina. By age group and sex (1991-2017)")
     g.ax.get_yaxis().set_major_formatter(
         ticker.FuncFormatter(lambda x, p: format(int(x), ","))
     )

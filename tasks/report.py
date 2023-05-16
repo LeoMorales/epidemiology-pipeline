@@ -4,47 +4,50 @@ import pandas
 
 
 def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
-    
-    causesCodes_used = ', '.join(causesCodes)
-    ageCategoryCauses_used = ', '.join(ageCategoryCauses)
+    causesCodes_used = ", ".join(causesCodes)
+    ageCategoryCauses_used = ", ".join(ageCategoryCauses)
     _codesGrouping = utils.get_codes_categorization(pandas.Series(causesCodes))
-    codesGrouping_used = '\n'.join([f'<li>"{k}" -> {v}</li>' for k, v in _codesGrouping.items()])
+    codesGrouping_used = "\n".join(
+        [f'<li>"{k}" -> {v}</li>' for k, v in _codesGrouping.items()]
+    )
     codesGrouping_used = f'<ul>"{codesGrouping_used}</ul>'
-    
+
     report = Report(
         title=causeName,
         subtitle="Epidemiology report",
-        experiment_params=[{
-            'title': 'Códigos',
-            'desc': f'Listado de códigos referidos a {causeName}',
-            'value': causesCodes_used,
-        },
-        {
-            'title': 'Categorias',
-            'desc': 'Grupos etarios definidos',
-            'value': ageCategoryCauses_used,
-        },
-        {
-            'title': 'Agrupamientos',
-            'desc': 'Los códigos de las causas se agruparon según las siguientes características',
-            'value': codesGrouping_used,
-        }]
+        experiment_params=[
+            {
+                "title": "Códigos",
+                "desc": f"Listado de códigos referidos a {causeName}",
+                "value": causesCodes_used,
+            },
+            {
+                "title": "Categorias",
+                "desc": "Grupos etarios definidos",
+                "value": ageCategoryCauses_used,
+            },
+            {
+                "title": "Agrupamientos",
+                "desc": "Los códigos de las causas se agruparon según las siguientes características",
+                "value": codesGrouping_used,
+            },
+        ],
     )
 
     # add section:
     report.add_section(
-        title=f'Cantidad de fallecidos por la causa {causeName}',
-        figure=str(upstream['draw-codes-in-stacked-barplot-all'])   
+        title=f"Cantidad de fallecidos por la causa {causeName}",
+        figure=str(upstream["draw-codes-in-stacked-barplot-all"]),
     )
     report.add_section(
-        title=f'Cantidad de fallecidos por la causa {causeName} (varones)',
-        figure=str(upstream['draw-codes-in-stacked-barplot-male'])   
+        title=f"Cantidad de fallecidos por la causa {causeName} (varones)",
+        figure=str(upstream["draw-codes-in-stacked-barplot-male"]),
     )
     report.add_section(
-        title=f'Cantidad de fallecidos por la causa {causeName} (mujeres)',
-        figure=str(upstream['draw-codes-in-stacked-barplot-female'])   
+        title=f"Cantidad de fallecidos por la causa {causeName} (mujeres)",
+        figure=str(upstream["draw-codes-in-stacked-barplot-female"]),
     )
-    desc = '''
+    desc = """
         <p>I		- A00-B99 - Ciertas enfermedades infecciosas y parasitarias </p>
         <p>II		- C00-D48 - Neoplasias </p>
         <p>III		- D50-D89 - Enfermedades de la sangre y de los órganos hematopoyéticos y otros trastornos que afectan el mecanismo de la inmunidad </p>
@@ -67,67 +70,79 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
         <p>XX		- V01-Y98 - Causas externas de morbilidad y de mortalidad </p>
         <p>XXI		- Z00-Z99 - Factores que influyen en el estado de salud y contacto con los servicios de salud </p>
         <p>XXII	- U00-U99 - Códigos para situaciones especiales </p>
-    '''
+    """
     report.add_section(
-        title=f'Referencia:',
+        title=f"Referencia:",
         text=desc,
     )
     report.add_section(
-        title=f'Cantidad de fallecidos en Argentina',
+        title=f"Cantidad de fallecidos en Argentina",
         text="Fallecimientos de varones y mujeres por grupo etario",
-        figure=str(upstream['draw-deceases-by-age-group-and-sex-all-causes'])   
+        figure=str(
+            upstream["draw-barchart-for-all-deceases-by-sex-and-grouped-by-age"]
+        ),
     )
 
     report.add_section(
-        title=f'Cantidad de fallecidos por la causa {causeName}',
+        title=f"Cantidad de fallecidos por la causa {causeName}",
         text="Fallecimientos de varones y mujeres por grupo etario",
-        figure=str(upstream['draw-deceases-by-age-group-and-sex-subset-of-causes'])   
+        figure=str(
+            upstream[
+                "draw-barchart-for-deceases-from-specific-causes-by-sex-and-grouped-by-age"
+            ]
+        ),
     )
 
     report.add_section(
-        title=f'Tendencia de fallecimientos',
+        title=f"Fallecimientos totales y específicos en Argentina",
+        text="Fallecimientos de varones y mujeres por grupo etario",
+        figure=str(upstream["draw-barchart-for-deceases-by-sex-and-grouped-by-age"]),
+    )
+
+    report.add_section(
+        title=f"Tendencia de fallecimientos",
         text="Cantidades de fallecidos por año y sexo",
-        figure=str(upstream['draw-deceases-lineplots-1991-2017'])
+        figure=str(upstream["draw-deceases-lineplots-1991-2017"]),
     )
 
     report.add_section(
-        title=f'Incidencia',
+        title=f"Incidencia",
         text=f"Fallecimientos a causa de {causeName} por cada 100,000 fallecimientos",
-        figure=str(upstream['draw-incidence-lineplots-1991-2017'])
-    )
-    
-    report.add_section(
-        title='Tasas anuales por grupo etario',
-        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos",
-        figure=str(upstream['draw-age-grouping-rates-lineplot'])    
-    )
-    
-    report.add_section(
-        title='Tasa de mortallidad por causas espacíficas (Cause-specifict mortality rate, CSMR).',
-        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos en cada provincia",
-        figure=str(upstream['draw-csmr-heatmap-provincial'])
+        figure=str(upstream["draw-incidence-lineplots-1991-2017"]),
     )
 
     report.add_section(
-        title=f'CSMR para la region NOA por grupo etário.',
-        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-NOA'])   
+        title="Tasas anuales por grupo etario",
+        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos",
+        figure=str(upstream["draw-age-grouping-rates-lineplot"]),
+    )
+
+    report.add_section(
+        title="Tasa de mortallidad por causas espacíficas (Cause-specifict mortality rate, CSMR).",
+        text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos en cada provincia",
+        figure=str(upstream["draw-csmr-heatmap-provincial"]),
+    )
+
+    report.add_section(
+        title=f"CSMR para la region NOA por grupo etário.",
+        figure=str(upstream["draw-csmr-heatmap-provincial-of-region-NOA"]),
     )
     report.add_section(
-        title=f'CSMR para la region NEA por grupo etário.',
-        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-NEA'])   
+        title=f"CSMR para la region NEA por grupo etário.",
+        figure=str(upstream["draw-csmr-heatmap-provincial-of-region-NEA"]),
     )
     report.add_section(
-        title=f'CSMR para la region Centro por grupo etário.',
-        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Centro'])   
+        title=f"CSMR para la region Centro por grupo etário.",
+        figure=str(upstream["draw-csmr-heatmap-provincial-of-region-Centro"]),
     )
     report.add_section(
-        title=f'CSMR para la region Cuyo por grupo etário.',
-        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Cuyo'])   
+        title=f"CSMR para la region Cuyo por grupo etário.",
+        figure=str(upstream["draw-csmr-heatmap-provincial-of-region-Cuyo"]),
     )
     report.add_section(
-        title=f'CSMR para la region Patagonia por grupo etário.',
-        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Patagonia'])   
+        title=f"CSMR para la region Patagonia por grupo etário.",
+        figure=str(upstream["draw-csmr-heatmap-provincial-of-region-Patagonia"]),
     )
-    
+
     # save:
-    report.build(str(product))  
+    report.build(str(product))

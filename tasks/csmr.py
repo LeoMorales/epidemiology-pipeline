@@ -19,6 +19,7 @@ import pandas
 from surnames_package import utils
 import seaborn
 import matplotlib.pyplot as plt
+from epidemiology_package import vis as epidemiology_vis
 
 
 def calculate_annual_csmr_per_province(upstream, product):
@@ -332,6 +333,7 @@ def draw_csmr_heatmap_provincial_of_region(upstream, product, regionName):
     n_provincias = len(regionData["provincia_nombre"].unique())
 
     if n_provincias == 0:
+        # TODO: Contemplar el caso en el que no haya información para las provincias de una región
         print("No hay provincias")
         return
 
@@ -348,16 +350,14 @@ def draw_csmr_heatmap_provincial_of_region(upstream, product, regionName):
     figWidth = 8
     figHeight = n_provincias * single_province_info_height
 
-    from epidemiology_package import vis
-
-    vis.draw_heatmap(
+    epidemiology_vis.draw_heatmap(
         pivoted_data=regionData,
         figWidth=figWidth,
         figHeight=figHeight,
         minValue=min_value,
         maxValue=max_value,
     )
-    # TODO: Ejecutar pipelina!!
+
     # set labels and title
     plt.xlabel("Year")
     plt.ylabel("Province")
