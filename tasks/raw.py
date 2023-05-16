@@ -20,6 +20,11 @@ def dbf2DF(dbfile, upper=True): #Reads in DBF files and returns Pandas DF
     return pandasDF
 
 def get_raw_dataframes(product):
+    """
+    Realiza la lectura de los archivos crudos por periodos de años.
+    A partir de estos archivos genera un nuevo archivo para el período 1991-2017,
+    sin procesar aún, pero con una estructura comun definida.
+    """
     paths_regex = "/home/lmorales/resources/mortalidad/*.dbf"
     paths_regex_2 = "/home/lmorales/resources/mortalidad/*.DBF"
 

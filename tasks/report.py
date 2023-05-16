@@ -103,10 +103,31 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     )
     
     report.add_section(
-        title='Tasa de mortallidad por causas espacíficas (CSMR).',
+        title='Tasa de mortallidad por causas espacíficas (Cause-specifict mortality rate, CSMR).',
         text=f"Tasa: Fallecimientos a causa de {causeName} por cada 1,000 fallecimientos en cada provincia",
         figure=str(upstream['draw-csmr-heatmap-provincial'])
     )
 
+    report.add_section(
+        title=f'CSMR para la region NOA por grupo etário.',
+        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-NOA'])   
+    )
+    report.add_section(
+        title=f'CSMR para la region NEA por grupo etário.',
+        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-NEA'])   
+    )
+    report.add_section(
+        title=f'CSMR para la region Centro por grupo etário.',
+        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Centro'])   
+    )
+    report.add_section(
+        title=f'CSMR para la region Cuyo por grupo etário.',
+        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Cuyo'])   
+    )
+    report.add_section(
+        title=f'CSMR para la region Patagonia por grupo etário.',
+        figure=str(upstream['draw-csmr-heatmap-provincial-of-region-Patagonia'])   
+    )
+    
     # save:
     report.build(str(product))  

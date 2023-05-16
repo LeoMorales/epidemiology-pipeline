@@ -78,11 +78,11 @@ tasks:
       criterion: [all, male, female]
 
   # rates:
-  - source: tasks.rates.get_age_grouping_rates
-    name: get-age-grouping-rates
+  - source: tasks.rates.get_annual_rates_grouping_by_age
+    name: get-annual-rates-grouping-by-age
     params:
       causesCodes: "{{causes_codes}}"
-    product: _products/rates/age-grouping-rates.parquet
+    product: _products/rates/annual-rates-grouping-by-age.parquet
 
   - source: tasks.visualization.draw_age_grouping_rates_lineplot
     name: draw-age-grouping-rates-lineplot
@@ -90,14 +90,27 @@ tasks:
       ageCategoriesOrder: "{{age_category_causes_display_order}}"
     product: _products/visualization/lineplots/age-grouping-rates-lineplot.png
 
-  - source: tasks.csmr.calculate_csmr_per_province
-    name: csmr-per-province
-    product: _products/csmr/csmr-per-province.parquet
+  - source: tasks.csmr.calculate_annual_csmr_per_province
+    name: get-annual-csmr-per-province
+    product: _products/csmr/annual-csmr-per-province.parquet
 
   - source: tasks.csmr.draw_csmr_heatmap_provincial
     name: draw-csmr-heatmap-provincial
     product: _products/csmr/csmr-heatmap-provincial.png
 
+  - source: tasks.csmr.calculate_annual_csmr_per_province_by_age_group
+    name: get-annual-csmr-per-province-by-age-group
+    product: _products/csmr/annual-csmr-per-province-by-age-group.parquet
+
+  - source: tasks.csmr.pivot_provincial_csmr_by_age_group_data
+    name: csmr-per-province-by-age-group-pivoted
+    product: _products/csmr/csmr-per-province-by-age-group-pivoted.parquet
+
+  - source: tasks.csmr.draw_csmr_heatmap_provincial_of_region
+    name: draw-csmr-heatmap-provincial-of-region-[[regionName]]
+    product: _products/csmr/regionals/csmr-heatmap-provincial-of-region-[[regionName]].png
+    grid:
+      regionName: [NOA, NEA, Cuyo, Centro, Patagonia]
   # report:
   - source: tasks.report.create_report
     name: create-report

@@ -256,6 +256,8 @@ def aggr_deceases_selected_causes_by_year_by_sex_arg(upstream, product):
         'deceases_subset_causes_mujer',
         'deceases_subset_causes_varon',
     ]
+    
+    cols = [ col for col in cols if (col in df_causes_subset_all.columns) ] 
     for col in cols:
         df_causes_subset_all[col] = df_causes_subset_all[col].astype('int64')
 

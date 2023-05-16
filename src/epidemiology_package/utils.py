@@ -568,6 +568,23 @@ DEPARTMENT_CODES_MAPPING = {
 import pandas
 
 def get_codes_categorization(codeSeries):
+    """
+    Recibe una lista de códigos y retorna las categorías agrupadas en un diccionario.
+    Las condiciones de agrupamiento se encuentran en 
+    Args:
+        codeSeries (list): Lista de códigos CIE-10
+    
+    Returns:
+        {
+            'I':    [...cie codes...], 
+            'II':   [...cie codes...], 
+            'III':  [...cie codes...], 
+            ...
+            'XX':   [...cie codes...], 
+            'XXI':  [...cie codes...], 
+            'XXII': [...cie codes...]
+        }    
+    """
     df = pandas.DataFrame(codeSeries).copy()
     df.columns = ['code']
     df = df.dropna(subset=['code'])

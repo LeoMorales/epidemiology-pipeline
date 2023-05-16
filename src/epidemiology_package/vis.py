@@ -251,3 +251,39 @@ def draw_stacked_plot(
     else:
         plt.show()
         return ax
+    
+def draw_heatmap(
+        pivoted_data,
+        figWidth,
+        figHeight,
+        minValue=None,
+        maxValue=None
+    ):
+    f, ax = plt.subplots(
+        figsize=(figWidth, figHeight),
+        constrained_layout=True
+    )
+
+    # Generate a custom diverging colormap
+    cmap = seaborn.diverging_palette(230, 20, as_cmap=True)
+
+    heatmap_args = {
+        'annot': True,
+        'fmt': '.1f',
+        'annot_kws': {'fontsize':4},
+        'cmap': cmap,
+        'square': True,
+        'linewidths': 1.5,
+        'cbar_kws': {"shrink": .25}
+    }
+    
+    if minValue and maxValue:
+        heatmap_args['vmin'] = minValue
+        heatmap_args['vmax'] = maxValue
+    
+    # create the heatmap with Seaborn
+    plot_axes = seaborn.heatmap(
+        pivoted_data,
+        **heatmap_args)
+
+    return plot_axes
