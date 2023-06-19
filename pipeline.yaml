@@ -158,6 +158,13 @@ tasks:
     name: get-annual-proportional-mortality-by-group-year
     product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
 
+  #
+  # Departmental tasks.
+  #
+  - source: tasks.departmental.mortality.get_proportional_mortality
+    name: get-departmental-proportional-mortality
+    product: _products/departmental/mortality/departmental-proportional-mortality.parquet
+
   # report:
   - source: tasks.report.create_report
     name: create-report
