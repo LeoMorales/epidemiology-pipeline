@@ -353,17 +353,7 @@ def draw_age_grouping_rates_lineplot(upstream, product, ageCategoriesOrder):
     rates_df_wide.index.name = None
     rates_df_wide.columns.name = None
 
-    col_order = [
-        "0 - 5",
-        "6 - 15",
-        "16 - 35",
-        "36 - 45",
-        "46 - 55",
-        "56 - 65",
-        "66 - 75",
-        "76 - 85",
-        ">85",
-    ]
+    col_order = ageCategoriesOrder
 
     rates_df_wide = rates_df_wide[col_order]
     plt.style.use("fivethirtyeight")

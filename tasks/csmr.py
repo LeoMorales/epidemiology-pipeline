@@ -184,7 +184,7 @@ def calculate_annual_csmr_per_province_by_age_group(upstream, product):
     df_csmr.to_parquet(str(product))
 
 
-def pivot_provincial_csmr_by_age_group_data(upstream, product):
+def pivot_provincial_csmr_by_age_group_data(upstream, product, _ageGroups):
     df_csmr = pandas.read_parquet(upstream["get-annual-csmr-per-province-by-age-group"])
     df_csmr_pivot = df_csmr.pivot(
         index=["provincia_id", "age_group"], columns="year", values="csmr"
@@ -206,18 +206,25 @@ def pivot_provincial_csmr_by_age_group_data(upstream, product):
     df_csmr_pivot = df_csmr_pivot[~df_csmr_pivot["provincia_nombre"].isna()]
 
     # order records:
+    # AGE_GROUP_ORDER_DICT = {
+    #     "0 - 5": 1,
+    #     "6 - 15": 2,
+    #     "16 - 35": 3,
+    #     "36 - 45": 4,
+    #     "46 - 55": 5,
+    #     "56 - 65": 6,
+    #     "66 - 75": 7,
+    #     "76 - 85": 8,
+    #     ">85": 9,
+    #     "NOT-ASSIGNED": 10,
+    # }
+    #
     AGE_GROUP_ORDER_DICT = {
-        "0 - 5": 1,
-        "6 - 15": 2,
-        "16 - 35": 3,
-        "36 - 45": 4,
-        "46 - 55": 5,
-        "56 - 65": 6,
-        "66 - 75": 7,
-        "76 - 85": 8,
-        ">85": 9,
-        "NOT-ASSIGNED": 10,
+        age_group_tag: order
+        for (age_group_tag, order) in zip(_ageGroups.keys(), range(len(_ageGroups)))
     }
+    AGE_GROUP_ORDER_DICT["NOT-ASSIGNED"] = 99
+
     df_csmr_pivot["age_group_order"] = df_csmr_pivot["age_group"].apply(
         lambda group: AGE_GROUP_ORDER_DICT[group]
     )

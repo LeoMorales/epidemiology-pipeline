@@ -1,12 +1,13 @@
 import pandas
 
 SEX_CODE_MAPPING = {
-    '1': 'varon',
-    '2': 'mujer',
-    '9': 'indeterminado',
-    '3': 'indeterminado',
-    '99': 'indeterminado'
+    "1": "varon",
+    "2": "mujer",
+    "9": "indeterminado",
+    "3": "indeterminado",
+    "99": "indeterminado",
 }
+
 
 def get_sex_correspondence(sex_ids_list):
     """
@@ -15,11 +16,10 @@ def get_sex_correspondence(sex_ids_list):
     """
     # create column with sex description in text
 
-    return \
-        pandas.Series(sex_ids_list)\
-            .apply(
-                lambda sex_id: SEX_CODE_MAPPING.get(str(sex_id).strip())
-            )
+    return pandas.Series(sex_ids_list).apply(
+        lambda sex_id: SEX_CODE_MAPPING.get(str(sex_id).strip())
+    )
+
 
 def get_age_in_years(ageSerie, ageCategorySerie):
     result = ageSerie.fillna(999).astype(int)
@@ -40,18 +40,17 @@ def get_age_in_years(ageSerie, ageCategorySerie):
 
     row_age_sin_clasificar = ageCategorySerie == 9
     result[row_age_sin_clasificar] = 999
-    
+
     return result
 
-def rewrite_codes_according_to_grouping(
-        values,
-        codesGrouping,
-        defaultValue='OTHERS'
-    ):
-    '''
+
+def rewrite_codes_according_to_grouping_deprecated(
+    values: pandas.core.series.Series, codesGrouping: dict, defaultValue: str = "OTHERS"
+) -> pandas.core.series.Series:
+    """
     Funcion para obtener una serie con códigos agrupados en base a una serie de codigos
-    y un diccionario con grupos de codigos y el listado de codigos al que reemplaza.
-    
+    y un diccionario con (key) grupos de codigos y (value) el listado de codigos al que representa.
+
     Args:
         values (pandas.Serie): Serie con los codigos presentes en las listas
             del diccionario codesGrouping.
@@ -63,12 +62,19 @@ def rewrite_codes_according_to_grouping(
                 "3310": ["3310"],
                 "2941": ["2941"],
             }
-    '''
+
+    Returns:
+        response (pandas.Serie)
+    """
+    if not isinstance(values, pandas.core.series.Series):
+        raise TypeError(
+            f"values se espera de tipo pandas.core.series.Series, se encontró {type(values)}"
+        )
     # valuesAndReplacements es una estructura para reescribir códigos
-    # que tiene como valores los arreglos en donde buscar el cógido y 
+    # que tiene como valores los arreglos en donde buscar el cógido y
     # como clave la nueva etiqueta para el código
     response = values.astype(str).copy()
-    
+
     # el valuesAndReplacements es mas cómodo pero lo reescribimos
     # para utilizar replace sobre los valores directamente
     flat_name_mapping = {}
@@ -76,8 +82,8 @@ def rewrite_codes_according_to_grouping(
         flat_name_mapping.update(
             {str(val): str(key) for val in codesGrouping[str(key)]}
         )
-    
-    # resultado de la reescritura: 
+
+    # resultado de la reescritura:
     # {'P00': 'P00',
     #  'P01': 'P01',
     #  ...
@@ -85,12 +91,65 @@ def rewrite_codes_according_to_grouping(
     #  'Q02': 'Q00-Q99',
     #  'Q03': 'Q00-Q99',
     #  ...}
-    
+
     # etiquetar los 'Otros'
     other_code_record_mask = ~response.isin(flat_name_mapping.keys())
     response.loc[other_code_record_mask] = defaultValue
-    
+
     # rescribir como codigo agrupado
     response = response.replace(flat_name_mapping)
-    
+
+    return response
+
+
+def rewrite_codes_according_to_grouping(
+    values: pandas.core.series.Series, codesGrouping: dict, defaultValue: str = "OTHERS"
+) -> pandas.core.series.Series:
+    """
+    Funcion para obtener una serie con códigos agrupados en base a una serie de codigos
+    y un diccionario con (key) grupos de codigos y (value) el listado de codigos al que representa.
+
+    Args:
+        values (pandas.Serie): Serie con los codigos presentes en las listas
+            del diccionario codesGrouping.
+
+        codesGrouping (dict):
+            Example:
+            {
+                "G3XX": ["G309", "G301", "G300", "G308"],
+                "3310": ["3310"],
+                "2941": ["2941"],
+            }
+
+    Returns:
+        response (pandas.Serie)
+    """
+    if not isinstance(values, pandas.core.series.Series):
+        raise TypeError(
+            f"values se espera de tipo pandas.core.series.Series, se encontró {type(values)}"
+        )
+    # valuesAndReplacements es una estructura para reescribir códigos
+    # que tiene como valores los arreglos en donde buscar el cógido y
+    # como clave la nueva etiqueta para el código
+    response = values.astype(str).copy()
+
+    # el valuesAndReplacements es mas cómodo pero lo reescribimos
+    # para utilizar replace sobre los valores directamente
+    flat_name_mapping = {}
+    for key in codesGrouping:
+        flat_name_mapping.update(
+            {str(val): str(key) for val in codesGrouping[str(key)]}
+        )
+
+    # resultado de la reescritura:
+    # {'P00': 'P00',
+    #  'P01': 'P01',
+    #  ...
+    #  'Q01': 'Q00-Q99',
+    #  'Q02': 'Q00-Q99',
+    #  'Q03': 'Q00-Q99',
+    #  ...}
+
+    response = response.apply(lambda code: flat_name_mapping.get(code, "OTHERS"))
+
     return response

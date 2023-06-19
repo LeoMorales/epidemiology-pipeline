@@ -567,58 +567,147 @@ DEPARTMENT_CODES_MAPPING = {
 
 import pandas
 
+
 def get_codes_categorization(codeSeries):
     """
     Recibe una lista de códigos y retorna las categorías agrupadas en un diccionario.
-    Las condiciones de agrupamiento se encuentran en 
+    Las condiciones de agrupamiento se encuentran en: `https://es.wikipedia.org/wiki/Anexo:C%C3%B3digos_CIE-10`
+
     Args:
         codeSeries (list): Lista de códigos CIE-10
-    
+
     Returns:
         {
-            'I':    [...cie codes...], 
-            'II':   [...cie codes...], 
-            'III':  [...cie codes...], 
+            'I':    [...cie codes...],
+            'II':   [...cie codes...],
+            'III':  [...cie codes...],
             ...
-            'XX':   [...cie codes...], 
-            'XXI':  [...cie codes...], 
+            'XX':   [...cie codes...],
+            'XXI':  [...cie codes...],
             'XXII': [...cie codes...]
-        }    
+        }
     """
     df = pandas.DataFrame(codeSeries).copy()
-    df.columns = ['code']
-    df = df.dropna(subset=['code'])
+    df.columns = ["code"]
+    df = df.dropna(subset=["code"])
 
-    df['initial'] = df['code'].str.slice(0, 1)
-    df['main_numbers'] = df['code'].str.slice(1, 3).astype(int)
-    
+    # create filtering vars
+    df["initial"] = df["code"].str.slice(0, 1)
+    # df["main_numbers"] = df["code"].str.slice(1, 3).astype(int)
+    df["main_numbers"] = (
+        df["code"]
+        .astype("str")
+        .str.extractall("(\d+)")
+        .unstack()
+        .fillna("")
+        .sum(axis=1)
+        .astype(int)
+        .astype(str)
+        .str.slice(0, 2)
+        .astype(int)
+    )
+
     conditions = {
-        'I': ( df['initial'].isin(['A', 'B']) ),
-        'II': ( (df['initial'] == 'C') | ( (df['initial'] == 'D') & (df['main_numbers'] <= 48)) ),
-        'III': ( (df['initial'] == 'D') & (df['main_numbers'] >= 50) ),
-        'IV': ( df['initial'] == 'E' ),
-        'V': ( df['initial'] == 'F' ),
-        'VI': ( df['initial'] == 'G' ),
-        'VII': ( (df['initial'] == 'H') & (df['main_numbers'] <= 59) ),
-        'VIII': ( (df['initial'] == 'H') & (df['main_numbers'] >= 60) ),
-        'IX': ( df['initial'] == 'I' ),
-        'X': ( df['initial'] == 'J' ),
-        'XI': ( (df['initial'] == 'K') & (df['main_numbers'] <= 93) ),
-        'XII': ( df['initial'] == 'L' ),
-        'XIII': ( df['initial'] == 'M' ),
-        'XIV': ( df['initial'] == 'N' ),
-        'XV': ( df['initial'] == 'O' ),
-        'XVI': ( (df['initial'] == 'P') & (df['main_numbers'] <= 96) ),
-        'XVII': ( df['initial'] == 'Q' ),
-        'XVIII': ( df['initial'] == 'R' ),
-        'XIX': ( (df['initial'] == 'S') | ( (df['initial'] == 'T') & (df['main_numbers'] <= 98)) ),
-        'XX': ( (df['initial'].isin(['V', 'W', 'X'])) | ( (df['initial'] == 'Y') & (df['main_numbers'] <= 98)) ),
-        'XXI': ( df['initial'] == 'Z' ),
-        'XXII': ( df['initial'] == 'U' ),
+        "I": (df["initial"].isin(["A", "B"])),
+        "II": (
+            (df["initial"] == "C")
+            | ((df["initial"] == "D") & (df["main_numbers"] <= 49))
+        ),
+        "III": ((df["initial"] == "D") & (df["main_numbers"] >= 50)),
+        "IV": (df["initial"] == "E"),
+        "V": (df["initial"] == "F"),
+        "VI": (df["initial"] == "G"),
+        "VII": ((df["initial"] == "H") & (df["main_numbers"] <= 59)),
+        "VIII": ((df["initial"] == "H") & (df["main_numbers"] >= 60)),
+        "IX": (df["initial"] == "I"),
+        "X": (df["initial"] == "J"),
+        "XI": ((df["initial"] == "K")),
+        "XII": (df["initial"] == "L"),
+        "XIII": (df["initial"] == "M"),
+        "XIV": (df["initial"] == "N"),
+        "XV": (df["initial"] == "O"),
+        "XVI": ((df["initial"] == "P") & (df["main_numbers"] <= 96)),
+        "XVII": (df["initial"] == "Q"),
+        "XVIII": (df["initial"] == "R"),
+        "XIX": (
+            (df["initial"] == "S")
+            | ((df["initial"] == "T") & (df["main_numbers"] <= 98))
+        ),
+        "XX": (df["initial"].isin(["V", "W", "X", "Y"])),
+        "XXI": (df["initial"] == "Z"),
+        "XXII": (df["initial"] == "U"),
     }
-    
+
     categories = {}
     for category in conditions:
         categories[category] = list(df[conditions[category]].code.unique())
-        
+
+    return categories
+
+
+def get_codes_categorization_deprecated(codeSeries):
+    """
+    Recibe una lista de códigos y retorna las categorías agrupadas en un diccionario.
+    Las condiciones de agrupamiento se encuentran en: `https://es.wikipedia.org/wiki/Anexo:C%C3%B3digos_CIE-10`
+
+    Args:
+        codeSeries (list): Lista de códigos CIE-10
+
+    Returns:
+        {
+            'I':    [...cie codes...],
+            'II':   [...cie codes...],
+            'III':  [...cie codes...],
+            ...
+            'XX':   [...cie codes...],
+            'XXI':  [...cie codes...],
+            'XXII': [...cie codes...]
+        }
+    """
+    df = pandas.DataFrame(codeSeries).copy()
+    df.columns = ["code"]
+    df = df.dropna(subset=["code"])
+
+    # create filtering vars
+    df["initial"] = df["code"].str.slice(0, 1)
+    df["main_numbers"] = df["code"].str.slice(1, 3).astype(int)
+
+    conditions = {
+        "I": (df["initial"].isin(["A", "B"])),
+        "II": (
+            (df["initial"] == "C")
+            | ((df["initial"] == "D") & (df["main_numbers"] <= 48))
+        ),
+        "III": ((df["initial"] == "D") & (df["main_numbers"] >= 50)),
+        "IV": (df["initial"] == "E"),
+        "V": (df["initial"] == "F"),
+        "VI": (df["initial"] == "G"),
+        "VII": ((df["initial"] == "H") & (df["main_numbers"] <= 59)),
+        "VIII": ((df["initial"] == "H") & (df["main_numbers"] >= 60)),
+        "IX": (df["initial"] == "I"),
+        "X": (df["initial"] == "J"),
+        "XI": ((df["initial"] == "K") & (df["main_numbers"] <= 93)),
+        "XII": (df["initial"] == "L"),
+        "XIII": (df["initial"] == "M"),
+        "XIV": (df["initial"] == "N"),
+        "XV": (df["initial"] == "O"),
+        "XVI": ((df["initial"] == "P") & (df["main_numbers"] <= 96)),
+        "XVII": (df["initial"] == "Q"),
+        "XVIII": (df["initial"] == "R"),
+        "XIX": (
+            (df["initial"] == "S")
+            | ((df["initial"] == "T") & (df["main_numbers"] <= 98))
+        ),
+        "XX": (
+            (df["initial"].isin(["V", "W", "X"]))
+            | ((df["initial"] == "Y") & (df["main_numbers"] <= 98))
+        ),
+        "XXI": (df["initial"] == "Z"),
+        "XXII": (df["initial"] == "U"),
+    }
+
+    categories = {}
+    for category in conditions:
+        categories[category] = list(df[conditions[category]].code.unique())
+
     return categories

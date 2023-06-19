@@ -78,8 +78,8 @@ tasks:
       catplotArgs: "{{catplot_args}}"
     product: _products/visualization/barplots/barchart-for-deceases-by-sex-and-grouped-by-age.png
 
-  - source: tasks.vis.stacked_barplot.draw_codes_in_stacked
-    name: draw-codes-in-stacked-barplot-[[criterion]]
+  - source: tasks.vis.stacked_barplot.draw_stacked_bars_with_amounts_by_code_category
+    name: draw-stacked-bars-with-amounts-by-code-category-[[criterion]]
     params:
       codeColors: "{{code_colors}}"
       causeName: "{{cause_name}}"
@@ -114,6 +114,8 @@ tasks:
 
   - source: tasks.csmr.pivot_provincial_csmr_by_age_group_data
     name: csmr-per-province-by-age-group-pivoted
+    params:
+      _ageGroups: "{{age_groups}}"
     product: _products/csmr/csmr-per-province-by-age-group-pivoted.parquet
 
   - source: tasks.csmr.draw_csmr_heatmap_provincial_of_region
@@ -121,6 +123,41 @@ tasks:
     product: _products/csmr/regionals/csmr-heatmap-provincial-of-region-[[regionName]].png
     grid:
       regionName: [NOA, NEA, Cuyo, Centro, Patagonia]
+
+  #
+  # Provincial tasks.
+  #
+  - source: tasks.provincial.mortality.get_proportional_mortality
+    name: get-provincial-proportional-mortality
+    product: _products/provincial/mortality/provincial_proportional_mortality.parquet
+
+  - source: tasks.provincial.mortality.get_proportional_mortality_per_period
+    name: get-provincial-proportional-mortality-per-period
+    product: _products/provincial/mortality/provincial_proportional_mortality_per_period.parquet
+
+  #
+  # National tasks.
+  #
+  - source: tasks.national.mortality.get_proportional_mortality
+    name: get-national-proportional-mortality
+    product: _products/national/mortality/national_proportional_mortality.parquet
+
+  - source: tasks.national.mortality.get_proportional_mortality_per_period
+    name: get-national-proportional-mortality-per-period
+    product: _products/national/mortality/national_proportional_mortality_per_period.parquet
+
+  - source: tasks.national.mortality.get_annual_proportional_mortality_by_group
+    name: get-annual-proportional-mortality-by-group
+    product: _products/national/mortality/annual-proportional-mortality-by-group.parquet
+
+  - source: tasks.national.mortality.get_annual_proportional_mortality_by_sex
+    name: get-annual-proportional-mortality-by-sex
+    product: _products/national/mortality/annual-proportional-mortality-by-sex.parquet
+
+  - source: tasks.national.mortality.get_annual_proportional_mortality_by_group_year
+    name: get-annual-proportional-mortality-by-group-year
+    product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
+
   # report:
   - source: tasks.report.create_report
     name: create-report

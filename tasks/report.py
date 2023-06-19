@@ -4,7 +4,10 @@ import pandas
 
 
 def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
-    causesCodes_used = ", ".join(causesCodes)
+    print()
+    print()
+    print(causesCodes)
+    causesCodes_used = ", ".join([str(code) for code in causesCodes])
     ageCategoryCauses_used = ", ".join(ageCategoryCauses)
     _codesGrouping = utils.get_codes_categorization(pandas.Series(causesCodes))
     codesGrouping_used = "\n".join(
@@ -37,15 +40,15 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     # add section:
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName}",
-        figure=str(upstream["draw-codes-in-stacked-barplot-all"]),
+        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-all"]),
     )
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName} (varones)",
-        figure=str(upstream["draw-codes-in-stacked-barplot-male"]),
+        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-male"]),
     )
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName} (mujeres)",
-        figure=str(upstream["draw-codes-in-stacked-barplot-female"]),
+        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-female"]),
     )
     desc = """
         <p>I		- A00-B99 - Ciertas enfermedades infecciosas y parasitarias </p>
