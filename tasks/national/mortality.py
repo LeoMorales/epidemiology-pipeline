@@ -56,10 +56,22 @@ def get_proportional_mortality(upstream, product):
     df.to_parquet(str(product))
 
 
-def get_proportional_mortality_per_period(upstream, product):
+def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
     """
-    Mortalidad proporcional para la Argentina
-    considerando todos los registros agrupados por periodos.
+    Mortalidad proporcional para la Argentina considerando todos los registros agrupados por periodos.
+
+    Args:
+        upstream (_type_): Destino
+        product (_type_): Entradas
+        groupingOfYears (dict): Agrupamiento de los registros. Por ejemplo
+            {
+                "1991": "1991-1993",
+                "1992": "1991-1993",
+                "1993": "1991-1993",
+                "1994": "1994-1997",
+                "1995": "1994-1997",
+                ...
+            }
     """
     df_defunciones_totales = pandas.read_parquet(
         str(upstream["get-deceases-with-age-group-label-1991-2017"])
@@ -68,41 +80,12 @@ def get_proportional_mortality_per_period(upstream, product):
         str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
     )
 
-    group_years = {
-        "1991": "1991-1993",
-        "1992": "1991-1993",
-        "1993": "1991-1993",
-        "1994": "1994-1997",
-        "1995": "1994-1997",
-        "1996": "1994-1997",
-        "1997": "1997-1999",
-        "1998": "1997-1999",
-        "1999": "1997-1999",
-        "2000": "2000-2002",
-        "2001": "2000-2002",
-        "2002": "2000-2002",
-        "2003": "2003-2005",
-        "2004": "2003-2005",
-        "2005": "2003-2005",
-        "2006": "2006-2008",
-        "2007": "2006-2008",
-        "2008": "2006-2008",
-        "2009": "2009-2011",
-        "2010": "2009-2011",
-        "2011": "2009-2011",
-        "2012": "2012-2014",
-        "2013": "2012-2014",
-        "2014": "2012-2014",
-        "2015": "2015-2017",
-        "2016": "2015-2017",
-        "2017": "2015-2017",
-    }
     df_defunciones_totales["year_group"] = df_defunciones_totales["year"].replace(
-        group_years
+        groupingOfYears
     )
     df_defunciones_especificas["year_group"] = df_defunciones_especificas[
         "year"
-    ].replace(group_years)
+    ].replace(groupingOfYears)
 
     df_arg_anual = pandas.merge(
         df_defunciones_totales.groupby(["year"])["provincia_id"]

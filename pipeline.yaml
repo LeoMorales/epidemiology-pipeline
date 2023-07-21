@@ -35,13 +35,13 @@ tasks:
     name: filter-departamental-records-1991-2017
     product: _products/filter/deceases-departmentals-1991-2017.parquet
 
-  - source: tasks.filter.filter_records_for_specific_causes
+  - source: tasks.filter.get_deceases_from_specific_causes_for_1991_2017
     name: filter-deceases-for-subset-of-causes-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
     product: _products/filter/deceases-for-subset-of-causes-1991-2017.parquet
 
-  - source: tasks.get.get_deceases_with_age_group_label_1991_2017
+  - source: tasks.get.get_all_deceases_1991_2017
     name: get-deceases-with-age-group-label-1991-2017
     params:
       ageGroupMapping: "{{age_groups}}"
@@ -133,6 +133,8 @@ tasks:
 
   - source: tasks.provincial.mortality.get_proportional_mortality_per_period
     name: get-provincial-proportional-mortality-per-period
+    params:
+      groupingOfYears: "{{grouping_of_years}}"
     product: _products/provincial/mortality/provincial_proportional_mortality_per_period.parquet
 
   #
@@ -164,6 +166,12 @@ tasks:
   - source: tasks.departmental.mortality.get_proportional_mortality
     name: get-departmental-proportional-mortality
     product: _products/departmental/mortality/departmental-proportional-mortality.parquet
+
+  - source: tasks.departmental.mortality.get_proportional_mortality_per_period
+    name: get-departmental-proportional-mortality-per-period
+    params:
+      groupingOfYears: "{{grouping_of_years}}"
+    product: _products/departmental/mortality/departmental-proportional-mortality-per-period.parquet
 
   # report:
   - source: tasks.report.create_report
