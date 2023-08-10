@@ -78,25 +78,21 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     report.add_section(
         title=f"Cantidad de fallecidos en Argentina",
         text="Fallecimientos de varones y mujeres por grupo etario",
-        figure=str(
-            upstream["draw-barchart-for-all-deceases-by-sex-and-grouped-by-age"]
-        ),
+        figure=str(upstream["draw-deceases-barplot-categorized-by-sex-by-age"]),
     )
 
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName}",
         text="Fallecimientos de varones y mujeres por grupo etario",
         figure=str(
-            upstream[
-                "draw-barchart-for-deceases-from-specific-causes-by-sex-and-grouped-by-age"
-            ]
+            upstream["draw-cause-specific-deceases-barplot-categorized-by-sex-by-age"]
         ),
     )
 
     report.add_section(
         title=f"Fallecimientos totales y específicos en Argentina",
         text="Fallecimientos de varones y mujeres por grupo etario",
-        figure=str(upstream["draw-barchart-for-deceases-by-sex-and-grouped-by-age"]),
+        figure=str(upstream["draw-all-and-specific-deceases-barchart-by-sex-by-age"]),
     )
 
     report.add_section(

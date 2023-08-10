@@ -44,6 +44,8 @@ def draw_barplot(
     yLabel: str = "Deceases",
     barLabelFontSize: int = 8,
     applyDataNormalization: bool = False,
+    displayTotals: bool = True,
+    displayBarsPercentages: bool = True,
     ax: matplotlib.axes._subplots.Axes = None,
 ):
     """
@@ -83,14 +85,14 @@ def draw_barplot(
             color=labelColorMapping[col],
         )
 
-        if applyDataNormalization:
+        if applyDataNormalization and displayBarsPercentages:
             for i_label, base, value in zip(data.index, bottom, data[col]):
                 ypos = base + (value / 2)
                 ax.text(i_label, ypos, "%.1f" % value, ha="center", va="center")
 
         bottom += numpy.array(data[col])
 
-    if not applyDataNormalization:
+    if (not applyDataNormalization) and displayTotals:
         # Sum up the rows of our data to get the total value of each bar.
         totals = data.sum(axis=1)
         # Set an offset that is used to bump the label up a bit above the bar.

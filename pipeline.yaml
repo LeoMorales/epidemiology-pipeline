@@ -45,29 +45,6 @@ tasks:
     name: draw-incidence-lineplots-1991-2017
     product: _products/visualization/lineplots/incidence-lineplots-1991-2017.png
 
-  - source: tasks.visualization.draw_barchart_for_deceases_from_specific_causes_by_sex_and_grouped_by_age
-    name: draw-barchart-for-deceases-from-specific-causes-by-sex-and-grouped-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_causes_display_order}}"
-      causeName: "{{cause_name}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/visualization/barplots/deceases-by-age-group-barplots-1991-2017-subset-of-causes.png
-
-  - source: tasks.visualization.draw_barchart_for_all_deceases_by_sex_and_grouped_by_age
-    name: draw-barchart-for-all-deceases-by-sex-and-grouped-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_all_display_order}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/visualization/barplots/deceases-by-age-group-barplots-1991-2017-all-causes.png
-
-  - source: tasks.visualization.draw_barchart_for_deceases_by_sex_and_grouped_by_age
-    name: draw-barchart-for-deceases-by-sex-and-grouped-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_causes_display_order}}"
-      causeName: "{{cause_name}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/visualization/barplots/barchart-for-deceases-by-sex-and-grouped-by-age.png
-
   - source: tasks.vis.stacked_barplot.draw_stacked_bars_with_amounts_by_code_category
     name: draw-stacked-bars-with-amounts-by-code-category-[[criterion]]
     params:
@@ -156,25 +133,50 @@ tasks:
     name: aggr-deceases-1991-2017-by-year-by-sex-arg
     product: _products/national/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
 
-  - source: tasks.national.vis.barplots.draw_deceases_barplots
-    name: draw-national-deceases-barplots-1991-2017
+  - source: tasks.national.vis.barplots.draw_all_and_specific_deceases_barplots
+    name: draw-all-and-specific-deceases-barplots
     params:
       causeCodes: "{{causes_codes}}"
-    product: _products/national/vis/barplots/deceases-barplots-1991-2017.png
-
-  - source: tasks.national.vis.barplots.draw_total_deceases_barplot
-    name: draw-national-total-deceases-barplot-1991-2017
-    product: _products/national/vis/barplots/total-deceases-barplot-1991-2017.png
+    product: _products/national/vis/barplots/barplots-all-and-specific-deceases-barplots-side-by-side.png
     grid:
       applyDataNormalization: [false, true]
 
   - source: tasks.national.vis.barplots.draw_total_deceases_barplot
     name: draw-national-total-deceases-barplot-1991-2017
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/national/vis/barplots/total-deceases-barplot-1991-2017.png
+    product: _products/national/vis/barplots/barplot-total-deceases-1991-2017.png
     grid:
       applyDataNormalization: [false, true]
+
+  - source: tasks.national.vis.barplots.draw_cause_specific_deceases_barplot
+    name: draw-national-cause-specific-deceases-barplot-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/national/vis/barplots/barplot-cause-specific-deceases-1991-2017.png
+    grid:
+      applyDataNormalization: [false, true]
+
+  - source: tasks.national.vis.barplots.draw_deceases_barplot_categorized_by_sex_by_age
+    name: draw-deceases-barplot-categorized-by-sex-by-age
+    params:
+      categoryDisplayOrder: "{{age_category_causes_display_order}}"
+      catplotArgs: "{{catplot_args}}"
+    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-all-deceases.png
+
+  - source: tasks.national.vis.barplots.draw_cause_specific_deceases_barplot_categorized_by_sex_by_age
+    name: draw-cause-specific-deceases-barplot-categorized-by-sex-by-age
+    params:
+      categoryDisplayOrder: "{{age_category_causes_display_order}}"
+      causeName: "{{cause_name}}"
+      catplotArgs: "{{catplot_args}}"
+    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-cause-specific-deceases.png
+
+  - source: tasks.national.vis.barplots.draw_all_and_specific_deceases_barchart_by_sex_by_age
+    name: draw-all-and-specific-deceases-barchart-by-sex-by-age
+    params:
+      categoryDisplayOrder: "{{age_category_causes_display_order}}"
+      causeName: "{{cause_name}}"
+      catplotArgs: "{{catplot_args}}"
+    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-all-and-specific-deceases.png
 
   #
   # Departmental tasks.
