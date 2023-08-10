@@ -1,31 +1,74 @@
 import numpy
 from matplotlib import pyplot as plt
-import matplotlib as mpl
+import matplotlib
 import seaborn
+import pandas
+
+
+def __normalize_data(df):
+    """Normaliza los valores de un dataframe por fila.
+
+    Args:
+        df (pandas.Dataframe): Dataframe con esquema: cada fila tiene la información para un año.
+        Cada columna contiene una variable, la suma por fila da el 100% para el año.
+
+    Returns:
+        pandas.Dataframe: Normalizado por fila.
+    """
+    normalized_df = df.copy()
+    df_columns = df.columns
+
+    normalized_df["snum"] = normalized_df.sum(axis=1)
+
+    for col in df_columns:
+        # pisar las variables originales por su versión normalizada
+        normalized_df[col] = normalized_df[col] / normalized_df["snum"] * 100
+
+    normalized_df = normalized_df.drop(columns="snum")
+    return normalized_df
 
 
 def draw_barplot(
-    data,
-    ax,
-    label_mapping={
+    data: pandas.core.frame.DataFrame,
+    labelPresentationMapping: dict = {
         "deceases_varon": "Male",
         "deceases_mujer": "Female",
         "deceases_indeterminado": "Undetermined",
     },
-    color_mapping={
+    labelColorMapping: dict = {
         "deceases_varon": "#5bc0de",
         "deceases_mujer": "#f46d43",
         "deceases_indeterminado": "#abdda4",
     },
-    plotTitle="Deceases by year and gender",
-    yLabel="Deceases",
+    plotTitle: str = "Deceases by year and gender",
+    yLabel: str = "Deceases",
+    barLabelFontSize: int = 8,
+    applyDataNormalization: bool = False,
+    ax: matplotlib.axes._subplots.Axes = None,
 ):
     """
+    Genera un grafico de barras apiladas. Cada barra representa a un año.
+    Cada valor apilado es el valor de la columna para ese año.
+
     Args:
-        data (pandas.Dataframe):
-            Una barra apilada por cada columna.
-            Una columna por cada renglon (index).
+        data (pandas.core.frame.DataFrame): Una barra por cada renglon. Una sub-barra apilada por cada columna.
+        labelPresentationMapping (_type_, optional): Cómo se va a presentar cada columna. Defaults to { "deceases_varon": "Male", "deceases_mujer": "Female", "deceases_indeterminado": "Undetermined", }.
+        labelColorMapping (_type_, optional): El color que va a tener cada columna. Defaults to { "deceases_varon": "#5bc0de", "deceases_mujer": "#f46d43", "deceases_indeterminado": "#abdda4", }.
+        plotTitle (str, optional): Título del gráfico. Defaults to "Deceases by year and gender".
+        yLabel (str, optional): Denominación del eje y. Defaults to "Deceases".
+        barLabelFontSize (int, optional): Tamaño de fuente de las etiquetas de las barras. Defaults to 8.
+        applyDataNormalization (bool, optional): Indican si se deben apilar barras que representan porcentajes o no. Defaults to False.
+        ax (matplotlib.axes._subplots.Axes, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
     """
+    if applyDataNormalization:
+        data = __normalize_data(data)
+
+    if not ax:
+        fig, ax = plt.subplots(figsize=(18, 8))
+
     # Initialize the bottom at zero for the first set of bars.
     bottom = numpy.zeros(len(data))
 
@@ -36,26 +79,32 @@ def draw_barplot(
             data.index,
             data[col],
             bottom=bottom,
-            label=label_mapping[col],
-            color=color_mapping[col],
+            label=labelPresentationMapping[col],
+            color=labelColorMapping[col],
         )
+
+        if applyDataNormalization:
+            for i_label, base, value in zip(data.index, bottom, data[col]):
+                ypos = base + (value / 2)
+                ax.text(i_label, ypos, "%.1f" % value, ha="center", va="center")
 
         bottom += numpy.array(data[col])
 
-    # Sum up the rows of our data to get the total value of each bar.
-    totals = data.sum(axis=1)
-    # Set an offset that is used to bump the label up a bit above the bar.
-    y_offset = max(totals) * 0.01
-    # Add labels to each bar.
-    for i, total in enumerate(totals):
-        ax.text(
-            totals.index[i],
-            total + y_offset,
-            round(total),
-            ha="center",
-            fontsize=8,
-            weight="bold",
-        )
+    if not applyDataNormalization:
+        # Sum up the rows of our data to get the total value of each bar.
+        totals = data.sum(axis=1)
+        # Set an offset that is used to bump the label up a bit above the bar.
+        y_offset = max(totals) * 0.01
+        # Add labels to each bar.
+        for i, total in enumerate(totals):
+            ax.text(
+                totals.index[i],
+                total + y_offset,
+                round(total),
+                ha="center",
+                fontsize=barLabelFontSize,
+                weight="bold",
+            )
 
     if plotTitle:
         ax.set_title(plotTitle)
@@ -64,9 +113,9 @@ def draw_barplot(
 
     ax.set_ylabel(yLabel, rotation=90, labelpad=10)
     xticks_labels = [str(index) for index in data.index]
-    # plt.xticks(xticks_labels, size=8, rotation=45)
-
     ax.legend()
+
+    return ax
 
 
 def draw_lineplot_comparission(

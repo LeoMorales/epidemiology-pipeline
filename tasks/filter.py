@@ -18,9 +18,7 @@ def filter_departamental_records(upstream, product):
 
 
 def get_deceases_from_specific_causes_for_1991_2017(upstream, product, causeCodes):
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 
     # df[df['codigo_defuncion'].isin(causeCodes)].head()
     _causeCodes = [str(code) for code in causeCodes]

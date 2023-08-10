@@ -4,9 +4,6 @@ import pandas
 
 
 def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
-    print()
-    print()
-    print(causesCodes)
     causesCodes_used = ", ".join([str(code) for code in causesCodes])
     ageCategoryCauses_used = ", ".join(ageCategoryCauses)
     _codesGrouping = utils.get_codes_categorization(pandas.Series(causesCodes))
@@ -20,8 +17,8 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
         subtitle="Epidemiology report",
         experiment_params=[
             {
-                "title": "Códigos",
-                "desc": f"Listado de códigos referidos a {causeName}",
+                "title": "Códigos CIE",
+                "desc": f"Listado de códigos referidos a {causeName} ({len(causesCodes)})",
                 "value": causesCodes_used,
             },
             {
@@ -58,21 +55,21 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
         <p>V		- F00-F99 - Trastornos mentales y del comportamiento </p>
         <p>VI		- G00-G99 - Enfermedades del sistema nervioso </p>
         <p>VII		- H00-H59 - Enfermedades del ojo y sus anexos </p>
-        <p>VIII	- H60-H95 - Enfermedades del oído y de la apófisis mastoides </p>
+        <p>VIII	    - H60-H95 - Enfermedades del oído y de la apófisis mastoides </p>
         <p>IX		- I00-I99 - Enfermedades del aparato circulatorio </p>
         <p>X		- J00-J99 - Enfermedades del aparato respiratorio </p>
         <p>XI		- K00-K93 - Enfermedades del aparato digestivo </p>
         <p>XII		- L00-L99 - Enfermedades de la piel y el tejido subcutáneo </p>
-        <p>XIII	- M00-M99 - Enfermedades del sistema osteomuscular y del tejido conectivo </p>
+        <p>XIII	    - M00-M99 - Enfermedades del sistema osteomuscular y del tejido conectivo </p>
         <p>XIV		- N00-N99 - Enfermedades del aparato genitourinario </p>
         <p>XV		- O00-O99 - Embarazo, parto y puerperio </p>
         <p>XVI		- P00-P96 - Ciertas afecciones originadas en el periodo perinatal </p>
-        <p>XVII	- Q00-Q99 - Malformaciones congénitas, deformidades y anomalías cromosómicas </p>
+        <p>XVII	    - Q00-Q99 - Malformaciones congénitas, deformidades y anomalías cromosómicas </p>
         <p>XVIII	- R00-R99 - Síntomas, signos y hallazgos anormales clínicos y de laboratorio, no clasificados en otra parte </p>
         <p>XIX		- S00-T98 - Traumatismos, envenenamientos y algunas otras consecuencias de causa externa </p>
         <p>XX		- V01-Y98 - Causas externas de morbilidad y de mortalidad </p>
         <p>XXI		- Z00-Z99 - Factores que influyen en el estado de salud y contacto con los servicios de salud </p>
-        <p>XXII	- U00-U99 - Códigos para situaciones especiales </p>
+        <p>XXII	    - U00-U99 - Códigos para situaciones especiales </p>
     """
     report.add_section(
         title=f"Referencia:",

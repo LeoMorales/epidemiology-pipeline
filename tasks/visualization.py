@@ -6,58 +6,12 @@ from epidemiology_package import cleanning
 from matplotlib import ticker
 
 
-def draw_deceases_barplots(upstream, product, causeCodes):
-    df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
-    )
-    df_deceases_of_interest = pandas.read_parquet(
-        str(upstream["aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg"])
-    )
-
-    # 3. combine
-    df = pandas.merge(df_all_deceases, df_deceases_of_interest, on="year", how="left")
-
-    decease_cols = ["deceases_indeterminado", "deceases_mujer", "deceases_varon"]
-    decease_data = df[decease_cols].set_index(df["year"])
-    cause_deceases_cols = [
-        "deceases_subset_causes_indeterminado",
-        "deceases_subset_causes_mujer",
-        "deceases_subset_causes_varon",
-    ]
-    cause_deceases_cols = [col for col in cause_deceases_cols if (col in df.columns)]
-    cause_deceases_data = df[cause_deceases_cols].set_index(df["year"])
-
-    fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(20, 16), sharex=True)
-    axes = ax.flatten()
-
-    cause_codes_text = ", ".join([str(code) for code in causeCodes[:10]])
-
-    vis.draw_barplot(decease_data, ax=axes[0])
-    vis.draw_barplot(
-        cause_deceases_data,
-        ax=axes[1],
-        label_mapping={
-            "deceases_subset_causes_varon": "Male",
-            "deceases_subset_causes_mujer": "Female",
-            "deceases_subset_causes_indeterminado": "Undetermined",
-        },
-        color_mapping={
-            "deceases_subset_causes_varon": "#5bc0de",
-            "deceases_subset_causes_mujer": "#f46d43",
-            "deceases_subset_causes_indeterminado": "#abdda4",
-        },
-        plotTitle=f"Deceases for selected causes, by year and gender\n{cause_codes_text}",
-    )
-
-    fig.savefig(str(product), dpi=300)
-
-
 def draw_deceases_lineplots(upstream, product, causeCodes):
     df_all_deceases = pandas.read_parquet(
         str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
     )
     df_deceases_of_interest = pandas.read_parquet(
-        str(upstream["aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg"])
     )
 
     # 3. combine
@@ -174,9 +128,7 @@ def draw_barchart_for_deceases_from_specific_causes_by_sex_and_grouped_by_age(
     """
     Dibuja un grafico de barras categorizadas por grupo etario.
     """
-    df = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["filter-cause-specific-deceases-1991-2017"]))
 
     df["sex"] = cleanning.get_sex_correspondence(df["sexo"])
     counts_df = (
@@ -223,9 +175,7 @@ def draw_barchart_for_all_deceases_by_sex_and_grouped_by_age(
     Dibuja todos los fallecimientos de la Argentina en el período de estudio en un
     grafico de barras categorizadas por grupo etario.
     """
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 
     df["sex"] = cleanning.get_sex_correspondence(df["sexo"])
     counts_df = (
@@ -281,11 +231,9 @@ def draw_barchart_for_deceases_by_sex_and_grouped_by_age(
     Dibuja todos los fallecimientos de la Argentina en el período de estudio en un
     grafico de barras categorizadas por grupo etario.
     """
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
     df_specific_causes = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     df["sex"] = cleanning.get_sex_correspondence(df["sexo"])

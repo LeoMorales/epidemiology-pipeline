@@ -3,9 +3,7 @@ from epidemiology_package import cleanning
 
 
 def get_deceases_by_year_by_sex_arg(upstream, product, causeCodes):
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 
     # 1. get dataset:
     #   year  deceases
@@ -138,7 +136,7 @@ def get_deceases_by_year_by_sex_arg(upstream, product, causeCodes):
     output_df.to_parquet(str(product))
 
 
-def aggr_deceases_by_year_by_sex_arg_all(upstream, product):
+def aggr_deceases_by_year_by_sex_arg_all_moved(upstream, product):
     """
     Create dataset:
     #    year  deceases_indeterminado  deceases_mujer   deceases_varon
@@ -147,9 +145,7 @@ def aggr_deceases_by_year_by_sex_arg_all(upstream, product):
     # 2  1993                          2916                117129                 147241
     """
 
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 
     df["sex_correspondence"] = cleanning.get_sex_correspondence(df["sexo"].values)
     # df['sex_correspondence'].value_counts()
@@ -203,74 +199,6 @@ def aggr_deceases_by_year_by_sex_arg_all(upstream, product):
         df_deceases_all[col] = df_deceases_all[col].astype("int64")
 
     df_deceases_all.to_parquet(str(product))
-
-
-def aggr_deceases_selected_causes_by_year_by_sex_arg(upstream, product):
-    df_causes_subset = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
-    )
-
-    df_causes_subset["sex_correspondence"] = cleanning.get_sex_correspondence(
-        df_causes_subset["sexo"]
-    )
-
-    df_causes_subset_deceases_year_by_sex = None
-
-    for sex_label, df_sex_slice in df_causes_subset.groupby("sex_correspondence"):
-        df_slice = (
-            df_sex_slice["year"]
-            .value_counts()
-            .reset_index()
-            .rename(
-                columns={"index": "year", "year": f"deceases_subset_causes_{sex_label}"}
-            )
-            .sort_values(by="year")
-            .reset_index(drop=True)
-        )
-
-        not_first_dataframe_collected = df_causes_subset_deceases_year_by_sex is None
-
-        if not_first_dataframe_collected:
-            df_causes_subset_deceases_year_by_sex = df_slice
-        else:
-            # combine
-            df_causes_subset_deceases_year_by_sex = pandas.merge(
-                df_causes_subset_deceases_year_by_sex, df_slice, on="year", how="right"
-            )
-
-    # get all deaths for causes subset:
-    total_subset_causes_deceases_df = (
-        df_causes_subset["year"]
-        .value_counts()
-        .reset_index()
-        .rename(columns={"index": "year", "year": "deceases_subset_causes"})
-        .sort_values(by="year")
-        .reset_index(drop=True)
-    )
-
-    # combine
-    df_causes_subset_all = pandas.merge(
-        total_subset_causes_deceases_df,
-        df_causes_subset_deceases_year_by_sex,
-        on=["year"],
-        how="left",
-    ).fillna(0)
-
-    df_causes_subset_all = df_causes_subset_all.fillna(0)
-
-    # convert data types
-    cols = [
-        "deceases_subset_causes",
-        "deceases_subset_causes_indeterminado",
-        "deceases_subset_causes_mujer",
-        "deceases_subset_causes_varon",
-    ]
-
-    cols = [col for col in cols if (col in df_causes_subset_all.columns)]
-    for col in cols:
-        df_causes_subset_all[col] = df_causes_subset_all[col].astype("int64")
-
-    df_causes_subset_all.to_parquet(str(product))
 
 
 def get_all_deceases_1991_2017(upstream, product, ageGroupMapping):

@@ -27,10 +27,10 @@ def get_proportional_mortality(upstream, product):
     considerando todos los registros del período.
     """
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     total_deceases_arg = len(df_defunciones_totales)
@@ -74,10 +74,10 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
             }
     """
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     df_defunciones_totales["year_group"] = df_defunciones_totales["year"].replace(
@@ -134,11 +134,9 @@ def get_annual_proportional_mortality_by_group(upstream, product):
     """
     Mortalidad proporcional para Argentina, por año y por sexo.
     """
-    total_deceases_df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    total_deceases_df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
     specific_deceases_df = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     total_deceases_df = __filter_sex_province(total_deceases_df)
@@ -185,11 +183,9 @@ def get_annual_proportional_mortality_by_sex(upstream, product):
     """
     Mortalidad proporcional para Argentina, por año y por sexo.
     """
-    total_deceases_df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    total_deceases_df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
     specific_deceases_df = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     total_deceases_df = __filter_sex_province(total_deceases_df)
@@ -226,11 +222,9 @@ def get_annual_proportional_mortality_by_group_year(upstream, product):
     """
     Mortalidad proporcional para Argentina, por año y por grupo etario.
     """
-    total_deceases_df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    total_deceases_df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
     specific_deceases_df = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     total_deceases_df = __filter_sex_province(total_deceases_df)

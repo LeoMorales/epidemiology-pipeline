@@ -34,10 +34,8 @@ def calculate_annual_csmr_per_province(upstream, product):
     """
 
     # read data:
-    df = pandas.read_parquet(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
-    df_all_deceases = pandas.read_parquet(
-        upstream["get-deceases-with-age-group-label-1991-2017"]
-    )
+    df = pandas.read_parquet(upstream["filter-cause-specific-deceases-1991-2017"])
+    df_all_deceases = pandas.read_parquet(upstream["get-deceases-1991-2017"])
 
     columns_selection = ["provincia_id", "codigo_defuncion", "year"]
 
@@ -140,11 +138,9 @@ def calculate_annual_csmr_per_province_by_age_group(upstream, product):
     """
     # read data:
     df_subset_deceases = pandas.read_parquet(
-        upstream["filter-deceases-for-subset-of-causes-1991-2017"]
+        upstream["filter-cause-specific-deceases-1991-2017"]
     )
-    df_all_deceases = pandas.read_parquet(
-        upstream["get-deceases-with-age-group-label-1991-2017"]
-    )
+    df_all_deceases = pandas.read_parquet(upstream["get-deceases-1991-2017"])
 
     columns_selection = ["provincia_id", "codigo_defuncion", "year", "age_group"]
 

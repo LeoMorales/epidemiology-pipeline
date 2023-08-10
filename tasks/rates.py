@@ -17,9 +17,7 @@ def get_annual_rates_grouping_by_age(upstream, product, causesCodes: list):
         267 2017   76 - 85  123.45
         268 2017       >85  123.45
     """
-    df = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
-    )
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 
     data = []
     for _year, df_year in df.groupby("year"):

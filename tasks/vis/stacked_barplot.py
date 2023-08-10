@@ -25,7 +25,7 @@ def draw_stacked_bars_with_amounts_by_code_category(
     PERIOD_COL = "year"
     # leer
     df_causes = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     _codesGrouping = utils.get_codes_categorization(

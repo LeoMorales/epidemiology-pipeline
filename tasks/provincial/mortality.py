@@ -24,10 +24,10 @@ def get_proportional_mortality(upstream, product):
     considerando todos los registros del período.
     """
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     df_defunciones_totales_por_provincia = (
@@ -74,13 +74,15 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
                 ...
             }
     """
+    # lectura de los registros
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
+    # obtención de la columna grupo de años
     df_defunciones_totales["year_group"] = df_defunciones_totales["year"].replace(
         groupingOfYears
     )
@@ -88,6 +90,7 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
         "year"
     ].replace(groupingOfYears)
 
+    # agrupamiento por provincia y periodo de años (general)
     df_defunciones_totales_por_provincia_por_periodo = (
         df_defunciones_totales.groupby(["provincia_id", "year_group"])["department_id"]
         .count()
@@ -95,6 +98,7 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
         .rename(columns={"department_id": "total_deceases"})
     )
 
+    # agrupamiento por provincia y periodo de años (especificas)
     df_defunciones_especificas_por_provincia_por_periodo = (
         df_defunciones_especificas.groupby(["provincia_id", "year_group"])[
             "department_id"
@@ -104,6 +108,7 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
         .rename(columns={"department_id": "specific_deceases"})
     )
 
+    # combinación de datos agrupados
     df_periodos = pandas.merge(
         df_defunciones_especificas_por_provincia_por_periodo,
         df_defunciones_totales_por_provincia_por_periodo,
@@ -111,8 +116,10 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
         how="left",
     )
 
+    # calculo de mortalidad especifica
     df_periodos["proportional_mortality_1000"] = (
         df_periodos["specific_deceases"] / df_periodos["total_deceases"]
     ) * 1_000
 
+    # guardado
     df_periodos.to_parquet(str(product))

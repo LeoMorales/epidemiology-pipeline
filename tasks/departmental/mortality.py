@@ -7,10 +7,10 @@ def get_proportional_mortality(upstream, product):
     considerando todos los registros de 1991 a 2017.
     """
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     df_defunciones_totales_por_departamento = (
@@ -64,10 +64,10 @@ def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
     """
     # leer registros
     df_defunciones_totales = pandas.read_parquet(
-        str(upstream["get-deceases-with-age-group-label-1991-2017"])
+        str(upstream["get-deceases-1991-2017"])
     )
     df_defunciones_especificas = pandas.read_parquet(
-        str(upstream["filter-deceases-for-subset-of-causes-1991-2017"])
+        str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
     # armar la etiqueta

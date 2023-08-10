@@ -11,19 +11,9 @@ tasks:
     name: get-cleaned-data-1991-2017
     product: _products/clean/deceases-1991-2017.parquet
 
-  - source: tasks.get.aggr_deceases_by_year_by_sex_arg_all
-    name: aggr-deceases-1991-2017-by-year-by-sex-arg
-    product: _products/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
-
-  - source: tasks.get.aggr_deceases_selected_causes_by_year_by_sex_arg
-    name: aggr-deceases-selected-causes-1991-2017-by-year-by-sex-arg
-    product: _products/get/deceases-subset-of-causes-1991-2017-by-year-by-sex-arg.parquet
-
-  - source: tasks.visualization.draw_deceases_barplots
-    name: draw-deceases-barplots-1991-2017
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/visualization/barplots/deceases-barplots-1991-2017.png
+  - source: tasks.national.get.aggr_cause_specific_deceases_by_year_by_sex_arg
+    name: aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg
+    product: _products/national/get/cause-specific-deceases-1991-2017-by-year-by-sex-arg.parquet
 
   - source: tasks.visualization.draw_deceases_lineplots
     name: draw-deceases-lineplots-1991-2017
@@ -36,13 +26,13 @@ tasks:
     product: _products/filter/deceases-departmentals-1991-2017.parquet
 
   - source: tasks.filter.get_deceases_from_specific_causes_for_1991_2017
-    name: filter-deceases-for-subset-of-causes-1991-2017
+    name: filter-cause-specific-deceases-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
-    product: _products/filter/deceases-for-subset-of-causes-1991-2017.parquet
+    product: _products/filter/cause-specific-deceases-1991-2017.parquet
 
   - source: tasks.get.get_all_deceases_1991_2017
-    name: get-deceases-with-age-group-label-1991-2017
+    name: get-deceases-1991-2017
     params:
       ageGroupMapping: "{{age_groups}}"
     product: _products/get/deceases-1991-2017-with-age-group-label.parquet
@@ -146,6 +136,8 @@ tasks:
 
   - source: tasks.national.mortality.get_proportional_mortality_per_period
     name: get-national-proportional-mortality-per-period
+    params:
+      groupingOfYears: "{{grouping_of_years}}"
     product: _products/national/mortality/national_proportional_mortality_per_period.parquet
 
   - source: tasks.national.mortality.get_annual_proportional_mortality_by_group
@@ -159,6 +151,30 @@ tasks:
   - source: tasks.national.mortality.get_annual_proportional_mortality_by_group_year
     name: get-annual-proportional-mortality-by-group-year
     product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
+
+  - source: tasks.national.get.aggr_deceases_by_year_by_sex_arg
+    name: aggr-deceases-1991-2017-by-year-by-sex-arg
+    product: _products/national/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
+
+  - source: tasks.national.vis.barplots.draw_deceases_barplots
+    name: draw-national-deceases-barplots-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/national/vis/barplots/deceases-barplots-1991-2017.png
+
+  - source: tasks.national.vis.barplots.draw_total_deceases_barplot
+    name: draw-national-total-deceases-barplot-1991-2017
+    product: _products/national/vis/barplots/total-deceases-barplot-1991-2017.png
+    grid:
+      applyDataNormalization: [false, true]
+
+  - source: tasks.national.vis.barplots.draw_total_deceases_barplot
+    name: draw-national-total-deceases-barplot-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/national/vis/barplots/total-deceases-barplot-1991-2017.png
+    grid:
+      applyDataNormalization: [false, true]
 
   #
   # Departmental tasks.
