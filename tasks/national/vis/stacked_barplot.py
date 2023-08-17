@@ -5,7 +5,7 @@ from epidemiology_package import utils
 
 
 def draw_stacked_bars_with_amounts_by_code_category(
-    upstream, product, codeColors, causeName, criterion
+    upstream, product, colorsForEachGroup, causeName, criterion, applyDataNormalization
 ):
     """
     Crear un gráfico de barras apiladas.
@@ -28,6 +28,8 @@ def draw_stacked_bars_with_amounts_by_code_category(
         str(upstream["filter-cause-specific-deceases-1991-2017"])
     )
 
+    # obtener el agrupamiento para los códigos utilizados (agrupamiento=dict)
+    # el agrupamiento devuelve un diccionario con categorias fijas
     _codesGrouping = utils.get_codes_categorization(
         df_causes[DECEASE_CODE_COL].unique()
     )
@@ -39,13 +41,14 @@ def draw_stacked_bars_with_amounts_by_code_category(
         defaultValue="others",
     )
 
+    # diferenciar la perspectiva que estamos utilizando
     filterSelector = {
         "all": [1, 2],
         "male": [1],
         "female": [2],
     }
-    sexSelection = filterSelector[criterion]
-    df_causes = df_causes[df_causes["sexo"].isin(sexSelection)]
+    correspondingSexCodes = filterSelector[criterion]
+    df_causes = df_causes[df_causes["sexo"].isin(correspondingSexCodes)]
 
     # contar
     causes_counts_df = (
@@ -58,11 +61,11 @@ def draw_stacked_bars_with_amounts_by_code_category(
 
     # crear un dataframe con ceros para todos los años y codigos
     unique_years = sorted(df_causes[PERIOD_COL].unique())
-    unique_codes = sorted(df_causes[AGGR_DECEASE_CODE_COL].unique())
+    unique_code_group = sorted(df_causes[AGGR_DECEASE_CODE_COL].unique())
     data = []
     for year in unique_years:
-        for code in unique_codes:
-            data.append([year, code, 0])
+        for codeGroup in unique_code_group:
+            data.append([year, codeGroup, 0])
     empty_df = pandas.DataFrame(
         data=data, columns=[PERIOD_COL, AGGR_DECEASE_CODE_COL, "count"]
     )
@@ -78,6 +81,11 @@ def draw_stacked_bars_with_amounts_by_code_category(
     )
     counts_df["count"] = counts_df["count"].astype(int)
 
+    #    year codigo_defuncion_aggr  count
+    # 0  1997                     I     68
+    # 1  1997                    II   6456
+    # 2  1997                   III     38
+
     # armar un dataset con los años en el indice y los codigos en las columnas:
     plot_data = counts_df.pivot(
         index=PERIOD_COL, columns=AGGR_DECEASE_CODE_COL, values="count"
@@ -85,12 +93,18 @@ def draw_stacked_bars_with_amounts_by_code_category(
     plot_data.index.name = None
     plot_data.columns.name = None
 
+    #        I    II  III  IV ...  XVII  XVIII
+    # 1997  68  6456   38  90 ...   743     16
+    # 1998  79  6550   47  92 ...   774     10
+    # 1999  71  6534   52  78 ...   758      6
+
     # We create a structure with tuples that allows us to discard the categories that do not have codes
     # in this problem and keep the colors when toggling "all, male, female"
     presentCategories = counts_df["codigo_defuncion_aggr"].unique()
     amountForEachCategory = list(map(lambda l: len(l), _codesGrouping.values()))
     categoryNames = _codesGrouping.keys()
-    categoryColors = list(zip(categoryNames, codeColors, amountForEachCategory))
+    colors = list(map(lambda k: colorsForEachGroup[k], _codesGrouping.keys()))
+    categoryColors = list(zip(categoryNames, colors, amountForEachCategory))
     _codeColors = [
         color
         for category, color, amount in categoryColors
@@ -99,6 +113,7 @@ def draw_stacked_bars_with_amounts_by_code_category(
 
     # TODO obtener los máximos por año para mantener el eje x independientemente del criterio recibido.
     # dibujar!
+    applyDataNormalization = applyDataNormalization == "normalized"
     sorted_plot_data = plot_data.sort_index(ascending=False)
     vis.draw_stacked_plot(
         sorted_plot_data,
@@ -108,4 +123,5 @@ def draw_stacked_bars_with_amounts_by_code_category(
         colors=_codeColors,
         legend_n_rows=len(_codesGrouping) // 4 if len(_codesGrouping) > 1 else 1,
         legend_font_size=14,
+        applyDataNormalization=applyDataNormalization,
     )

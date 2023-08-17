@@ -1,143 +1,112 @@
 import pandas
-from epidemiology_package import cleanning
 
 
-def aggr_deceases_by_year_by_sex_arg(upstream, product):
-    """Genera el dataset con el recuento de falleciminetos totales y los fallecimentos deagrupados segun seexo.
-
-    <class 'pandas.core.frame.DataFrame'>
-    #   Column                  Non-Null Count  Dtype
-    ---  ------                  --------------  -----
-    0   year                    27 non-null     object
-    1   deceases                27 non-null     int64
-    2   deceases_indeterminado  27 non-null     int64
-    3   deceases_mujer          27 non-null     int64
-    4   deceases_varon          27 non-null     int64
-    dtypes: int64(4), object(1)
+def getAnnualCauseSpecificMortalityRate(
+    upstream, product, rate_multiplier: float = 1_000
+):
+    """Calcula las tasas de mortalidad anual por causas específicas (csmr) para la Argentina.
 
     Args:
-        upstream (_type_): input
-        product (_type_): output
+        upstream (_type_): Input
+        product (_type_): Output
     """
-    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
+    all_deceases_df = pandas.read_parquet(
+        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+    )
+    causes_specific_deceases_df = pandas.read_parquet(
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
+    )
 
-    df["sex_correspondence"] = cleanning.get_sex_correspondence(df["sexo"].values)
-    # df['sex_correspondence'].value_counts()
-
-    df_deceases_year_by_sex = pandas.DataFrame({})
-
-    for sex_label, df_sex in df.groupby("sex_correspondence"):
-        deceases_col_label = f"deceases_{sex_label}"
-
-        df_slice = (
-            df_sex["year"]
-            .value_counts()
-            .reset_index()
-            .rename(columns={"index": "year", "year": deceases_col_label})
-            .sort_values(by="year")
-            .reset_index(drop=True)
+    if (not ("year" in all_deceases_df.columns)) & (
+        not ("year" in causes_specific_deceases_df.columns)
+    ):
+        raise ValueError(
+            "No se encuentra la columna 'year' en alguno de los datasets de entrada"
         )
 
-        if len(df_deceases_year_by_sex) == 0:
-            df_deceases_year_by_sex = df_slice
-        else:
-            df_deceases_year_by_sex = pandas.merge(
-                df_deceases_year_by_sex, df_slice, on="year"
-            )
-
-    # get all deceases dataset:
-    #   year  deceases
-    # 0  1991          255609
-    # 1  1992          262287
-    # 2  1993          267286
-    df_deceases_year = (
-        df["year"]
-        .value_counts()
-        .reset_index()
-        .rename(columns={"index": "year", "year": "deceases"})
-        .sort_values(by="year")
-        .reset_index(drop=True)
+    # 3. combine
+    df = pandas.merge(
+        all_deceases_df, causes_specific_deceases_df, on="year", how="left"
     )
 
-    # append total deceases column
-    df_deceases_all = pandas.merge(df_deceases_year, df_deceases_year_by_sex, on="year")
+    csmr_df = df[["year"]].copy()
 
-    # convert data types
-    cols = [
-        "deceases",
-        "deceases_indeterminado",
-        "deceases_mujer",
-        "deceases_varon",
-    ]
-    for col in cols:
-        df_deceases_all[col] = df_deceases_all[col].astype("int64")
+    csmr_df["csmr"] = (df["cause_specific_deceases"] / df["deceases"]) * rate_multiplier
 
-    df_deceases_all.to_parquet(str(product))
+    csmr_df["csmr_male"] = (
+        df["cause_specific_deceases_male"] / df["deceases"]
+    ) * rate_multiplier
+
+    csmr_df["csmr_female"] = (
+        df["cause_specific_deceases_female"] / df["deceases"]
+    ) * rate_multiplier
+
+    csmr_df["csmr_male_local"] = (
+        df["cause_specific_deceases_male"] / df["deceases_male"]
+    ) * rate_multiplier
+
+    csmr_df["csmr_female_local"] = (
+        df["cause_specific_deceases_female"] / df["deceases_female"]
+    ) * rate_multiplier
+
+    csmr_df = csmr_df.fillna(0)
+
+    csmr_df.to_parquet(str(product))
 
 
-def aggr_cause_specific_deceases_by_year_by_sex_arg(upstream, product):
-    df_causes_subset = pandas.read_parquet(
-        str(upstream["filter-cause-specific-deceases-1991-2017"])
+def getPeriodicalCauseSpecificMortalityRate(
+    upstream, product, rate_multiplier: float = 1_000
+):
+    """Calcula las tasas de mortalidad por causas específicas (csmr) para la Argentina, por periodos.
+
+    Args:
+        upstream (_type_): Input
+        product (_type_): Output
+    """
+    all_deceases_df = pandas.read_parquet(
+        str(upstream["aggr-deceases-by-sex-by-period-arg"])
+    )
+    causes_specific_deceases_df = pandas.read_parquet(
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-period"])
     )
 
-    df_causes_subset["sex_correspondence"] = cleanning.get_sex_correspondence(
-        df_causes_subset["sexo"]
-    )
+    # TODO: Revisar si se realiza el filtrado de registros pertenecientes a provincias válidas y correspondientes a sexos fem masc.
+    # en la vieja tarea mortality se usaban estos metodos:
+    # total_deceases_df = __filter_sex_province(total_deceases_df)
+    # cause_specific_deceases = __filter_sex_province(cause_specific_deceases)
 
-    df_causes_subset_deceases_year_by_sex = None
-
-    for sex_label, df_sex_slice in df_causes_subset.groupby("sex_correspondence"):
-        df_slice = (
-            df_sex_slice["year"]
-            .value_counts()
-            .reset_index()
-            .rename(
-                columns={"index": "year", "year": f"deceases_subset_causes_{sex_label}"}
-            )
-            .sort_values(by="year")
-            .reset_index(drop=True)
+    if (not ("year_group" in all_deceases_df.columns)) & (
+        not ("year_group" in causes_specific_deceases_df.columns)
+    ):
+        raise ValueError(
+            "No se encuentra la columna 'year_group' en alguno de los datasets de entrada"
         )
 
-        not_first_dataframe_collected = df_causes_subset_deceases_year_by_sex is None
-
-        if not_first_dataframe_collected:
-            df_causes_subset_deceases_year_by_sex = df_slice
-        else:
-            # combine
-            df_causes_subset_deceases_year_by_sex = pandas.merge(
-                df_causes_subset_deceases_year_by_sex, df_slice, on="year", how="right"
-            )
-
-    # get all deaths for causes subset:
-    total_subset_causes_deceases_df = (
-        df_causes_subset["year"]
-        .value_counts()
-        .reset_index()
-        .rename(columns={"index": "year", "year": "deceases_subset_causes"})
-        .sort_values(by="year")
-        .reset_index(drop=True)
+    # 3. combine
+    df = pandas.merge(
+        all_deceases_df, causes_specific_deceases_df, on="year_group", how="left"
     )
 
-    # combine
-    df_causes_subset_all = pandas.merge(
-        total_subset_causes_deceases_df,
-        df_causes_subset_deceases_year_by_sex,
-        on=["year"],
-        how="left",
-    ).fillna(0)
+    csmr_df = df[["year_group"]].copy()
 
-    df_causes_subset_all = df_causes_subset_all.fillna(0)
+    csmr_df["csmr"] = (df["cause_specific_deceases"] / df["deceases"]) * rate_multiplier
 
-    # convert data types
-    cols = [
-        "deceases_subset_causes",
-        "deceases_subset_causes_indeterminado",
-        "deceases_subset_causes_mujer",
-        "deceases_subset_causes_varon",
-    ]
+    csmr_df["csmr_male"] = (
+        df["cause_specific_deceases_male"] / df["deceases"]
+    ) * rate_multiplier
 
-    cols = [col for col in cols if (col in df_causes_subset_all.columns)]
-    for col in cols:
-        df_causes_subset_all[col] = df_causes_subset_all[col].astype("int64")
+    csmr_df["csmr_female"] = (
+        df["cause_specific_deceases_female"] / df["deceases"]
+    ) * rate_multiplier
 
-    df_causes_subset_all.to_parquet(str(product))
+    csmr_df["csmr_male_local"] = (
+        df["cause_specific_deceases_male"] / df["deceases_male"]
+    ) * rate_multiplier
+
+    csmr_df["csmr_female_local"] = (
+        df["cause_specific_deceases_female"] / df["deceases_female"]
+    ) * rate_multiplier
+
+    csmr_df = csmr_df.fillna(0)
+
+    csmr_df.to_parquet(str(product))

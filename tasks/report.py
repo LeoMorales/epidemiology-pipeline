@@ -37,15 +37,21 @@ def create_report(upstream, product, causeName, causesCodes, ageCategoryCauses):
     # add section:
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName}",
-        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-all"]),
+        figure=str(
+            upstream["draw-stacked-bars-with-amounts-by-code-category-all-absolute"]
+        ),
     )
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName} (varones)",
-        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-male"]),
+        figure=str(
+            upstream["draw-stacked-bars-with-amounts-by-code-category-male-absolute"]
+        ),
     )
     report.add_section(
         title=f"Cantidad de fallecidos por la causa {causeName} (mujeres)",
-        figure=str(upstream["draw-stacked-bars-with-amounts-by-code-category-female"]),
+        figure=str(
+            upstream["draw-stacked-bars-with-amounts-by-code-category-female-absolute"]
+        ),
     )
     desc = """
         <p>I		- A00-B99 - Ciertas enfermedades infecciosas y parasitarias </p>

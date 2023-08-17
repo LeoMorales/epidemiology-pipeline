@@ -47,8 +47,7 @@ def get_proportional_mortality(upstream, product):
 
 def get_proportional_mortality_per_period(upstream, product, groupingOfYears):
     """
-    Mortalidad proporcional para cada provincia
-    considerando todos los registros agrupados por periodos.
+    Mortalidad proporcional para cada provincia considerando todos los registros agrupados por periodos.
 
     Args:
         groupingOfYears (dict): Agrupamiento de los registros

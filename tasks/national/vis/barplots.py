@@ -10,20 +10,20 @@ def draw_all_and_specific_deceases_barplots(
     upstream, product, causeCodes, applyDataNormalization
 ):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-deceases-by-sex-by-year-arg"])
     )
     df_cause_specific_deceases = pandas.read_parquet(
-        str(upstream["aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
     )
 
-    all_decease_cols = ["deceases_indeterminado", "deceases_mujer", "deceases_varon"]
+    all_decease_cols = ["deceases_undetermined", "deceases_female", "deceases_male"]
     all_deceases_data = df_all_deceases[all_decease_cols].set_index(
         df_all_deceases["year"]
     )
     cause_specific_deceases_cols = [
-        "deceases_subset_causes_indeterminado",
-        "deceases_subset_causes_mujer",
-        "deceases_subset_causes_varon",
+        "cause_specific_deceases_undetermined",
+        "cause_specific_deceases_female",
+        "cause_specific_deceases_male",
     ]
     cause_specific_deceases_data = df_cause_specific_deceases[
         cause_specific_deceases_cols
@@ -60,14 +60,14 @@ def draw_all_and_specific_deceases_barplots(
         cause_specific_deceases_data,
         ax=axes[1],
         labelPresentationMapping={
-            "deceases_subset_causes_varon": "Male",
-            "deceases_subset_causes_mujer": "Female",
-            "deceases_subset_causes_indeterminado": "Undetermined",
+            "cause_specific_deceases_male": "Male",
+            "cause_specific_deceases_female": "Female",
+            "cause_specific_deceases_undetermined": "Undetermined",
         },
         labelColorMapping={
-            "deceases_subset_causes_varon": "#5bc0de",
-            "deceases_subset_causes_mujer": "#f46d43",
-            "deceases_subset_causes_indeterminado": "#abdda4",
+            "cause_specific_deceases_male": "#5bc0de",
+            "cause_specific_deceases_female": "#f46d43",
+            "cause_specific_deceases_undetermined": "#abdda4",
         },
         plotTitle=plotTitle,
         displayTotals=False,
@@ -83,10 +83,10 @@ def draw_all_and_specific_deceases_barplots(
 
 def draw_total_deceases_barplot(upstream, product, applyDataNormalization):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-deceases-by-sex-by-year-arg"])
     )
 
-    all_decease_cols = ["deceases_mujer", "deceases_varon"]
+    all_decease_cols = ["deceases_female", "deceases_male"]
     all_deceases_data = df_all_deceases[all_decease_cols].set_index(
         df_all_deceases["year"]
     )
@@ -109,12 +109,12 @@ def draw_cause_specific_deceases_barplot(
     upstream, product, causeCodes, applyDataNormalization
 ):
     df_cuase_specific_deceases = pandas.read_parquet(
-        str(upstream["aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
     )
 
     all_decease_cols = [
-        "deceases_subset_causes_mujer",
-        "deceases_subset_causes_varon",
+        "cause_specific_deceases_female",
+        "cause_specific_deceases_male",
     ]
     all_deceases_data = df_cuase_specific_deceases[all_decease_cols].set_index(
         df_cuase_specific_deceases["year"]
@@ -144,14 +144,14 @@ def draw_cause_specific_deceases_barplot(
         ax=ax,
         plotTitle=plotTitle,
         labelPresentationMapping={
-            "deceases_subset_causes_varon": "Male",
-            "deceases_subset_causes_mujer": "Female",
-            "deceases_subset_causes_indeterminado": "Undetermined",
+            "cause_specific_deceases_male": "Male",
+            "cause_specific_deceases_female": "Female",
+            "cause_specific_deceases_undetermined": "Undetermined",
         },
         labelColorMapping={
-            "deceases_subset_causes_varon": "#5bc0de",
-            "deceases_subset_causes_mujer": "#f46d43",
-            "deceases_subset_causes_indeterminado": "#abdda4",
+            "cause_specific_deceases_male": "#5bc0de",
+            "cause_specific_deceases_female": "#f46d43",
+            "cause_specific_deceases_undetermined": "#abdda4",
         },
         applyDataNormalization=applyDataNormalization,
     )

@@ -8,19 +8,19 @@ from matplotlib import ticker
 
 def draw_deceases_lineplots(upstream, product, causeCodes):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-deceases-by-sex-by-year-arg"])
     )
     df_deceases_of_interest = pandas.read_parquet(
-        str(upstream["aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
     )
 
     # 3. combine
     df = pandas.merge(df_all_deceases, df_deceases_of_interest, on="year", how="left")
 
-    male = df["deceases_varon"].tolist()
-    female = df["deceases_mujer"].tolist()
-    male_in_subset_of_causes = df["deceases_subset_causes_varon"].tolist()
-    female_in_subset_of_causes = df["deceases_subset_causes_mujer"].tolist()
+    male = df["deceases_male"].tolist()
+    female = df["deceases_female"].tolist()
+    male_in_subset_of_causes = df["cause_specific_deceases_male"].tolist()
+    female_in_subset_of_causes = df["cause_specific_deceases_female"].tolist()
     year = [int(year) for year in df["year"]]
 
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=(16, 16), dpi=300)
@@ -58,8 +58,8 @@ def draw_incidence_lineplots(upstream, product):
 
     vis.draw_lineplot_comparission(
         incidence_df["year"].astype(int).values,
-        incidence_df["causes_incidence"].values,
-        incidence_df["causes_incidence_female"].values,
+        incidence_df["csmr"].values,
+        incidence_df["csmr_female"].values,
         ax=axes[0],
         aSerieLabel="Causes incidence",
         bSerieLabel="Subset of causes\nincidence in females",
@@ -72,8 +72,8 @@ def draw_incidence_lineplots(upstream, product):
 
     vis.draw_lineplot_comparission(
         incidence_df["year"].astype(int).values,
-        incidence_df["causes_incidence_female"].values,
-        incidence_df["causes_incidence_male"].values,
+        incidence_df["csmr_female"].values,
+        incidence_df["csmr_male"].values,
         ax=axes[0],
         aSerieLabel="",
         bSerieLabel="Subset of causes\nincidence in males",
@@ -93,8 +93,8 @@ def draw_incidence_lineplots(upstream, product):
 
     ax = vis.draw_lineplot_comparission(
         incidence_df["year"].astype(int).values,
-        incidence_df["causes_incidence_male_local"].values,
-        incidence_df["causes_incidence_female_local"].values,
+        incidence_df["csmr_male_local"].values,
+        incidence_df["csmr_female_local"].values,
         aSerieLabel="Causes Local Male incidence",
         bSerieLabel="Causes Local Female incidence",
         ax=axes[1],
@@ -106,8 +106,8 @@ def draw_incidence_lineplots(upstream, product):
 
     vis.draw_lineplot_comparission(
         incidence_df["year"].astype(int).values,
-        incidence_df["causes_incidence"].values,
-        incidence_df["causes_incidence_female_local"].values,
+        incidence_df["csmr"].values,
+        incidence_df["csmr_female_local"].values,
         ax=axes[1],
         aSerieColor="#919191",
         bSerieColor="#f46d43",

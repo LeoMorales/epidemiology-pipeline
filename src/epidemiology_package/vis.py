@@ -31,14 +31,14 @@ def __normalize_data(df):
 def draw_barplot(
     data: pandas.core.frame.DataFrame,
     labelPresentationMapping: dict = {
-        "deceases_varon": "Male",
-        "deceases_mujer": "Female",
-        "deceases_indeterminado": "Undetermined",
+        "deceases_male": "Male",
+        "deceases_female": "Female",
+        "deceases_undetermined": "Undetermined",
     },
     labelColorMapping: dict = {
-        "deceases_varon": "#5bc0de",
-        "deceases_mujer": "#f46d43",
-        "deceases_indeterminado": "#abdda4",
+        "deceases_male": "#5bc0de",
+        "deceases_female": "#f46d43",
+        "deceases_undetermined": "#abdda4",
     },
     plotTitle: str = "Deceases by year and gender",
     yLabel: str = "Deceases",
@@ -54,8 +54,8 @@ def draw_barplot(
 
     Args:
         data (pandas.core.frame.DataFrame): Una barra por cada renglon. Una sub-barra apilada por cada columna.
-        labelPresentationMapping (_type_, optional): Cómo se va a presentar cada columna. Defaults to { "deceases_varon": "Male", "deceases_mujer": "Female", "deceases_indeterminado": "Undetermined", }.
-        labelColorMapping (_type_, optional): El color que va a tener cada columna. Defaults to { "deceases_varon": "#5bc0de", "deceases_mujer": "#f46d43", "deceases_indeterminado": "#abdda4", }.
+        labelPresentationMapping (_type_, optional): Cómo se va a presentar cada columna. Defaults to { "deceases_male": "Male", "deceases_female": "Female", "deceases_undetermined": "Undetermined", }.
+        labelColorMapping (_type_, optional): El color que va a tener cada columna. Defaults to { "deceases_male": "#5bc0de", "deceases_female": "#f46d43", "deceases_undetermined": "#abdda4", }.
         plotTitle (str, optional): Título del gráfico. Defaults to "Deceases by year and gender".
         yLabel (str, optional): Denominación del eje y. Defaults to "Deceases".
         barLabelFontSize (int, optional): Tamaño de fuente de las etiquetas de las barras. Defaults to 8.
@@ -241,7 +241,11 @@ def draw_stacked_plot(
     colors=["#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f"],
     legend_n_rows=2,
     legend_font_size=12,
+    applyDataNormalization: bool = False,
 ):
+    if applyDataNormalization:
+        sorted_plot_data = __normalize_data(sorted_plot_data)
+
     seaborn.set()
     font_color = "#525252"
     csfont = {"fontname": "Calibri"}  # title font
@@ -293,8 +297,6 @@ def draw_stacked_plot(
     )
     for text in legend.get_texts():
         plt.setp(text, color=font_color)  # legend font color
-
-    # plt.tight_layout()
 
     if only_save:
         plt.savefig(output_file, dpi=300, bbox_inches="tight")

@@ -11,10 +11,6 @@ tasks:
     name: get-cleaned-data-1991-2017
     product: _products/clean/deceases-1991-2017.parquet
 
-  - source: tasks.national.get.aggr_cause_specific_deceases_by_year_by_sex_arg
-    name: aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg
-    product: _products/national/get/cause-specific-deceases-1991-2017-by-year-by-sex-arg.parquet
-
   - source: tasks.visualization.draw_deceases_lineplots
     name: draw-deceases-lineplots-1991-2017
     params:
@@ -25,7 +21,7 @@ tasks:
     name: filter-departamental-records-1991-2017
     product: _products/filter/deceases-departmentals-1991-2017.parquet
 
-  - source: tasks.filter.get_deceases_from_specific_causes_for_1991_2017
+  - source: tasks.filter.get_cause_specific_deceases_1991_2017
     name: filter-cause-specific-deceases-1991-2017
     params:
       causeCodes: "{{causes_codes}}"
@@ -44,15 +40,6 @@ tasks:
   - source: tasks.visualization.draw_incidence_lineplots
     name: draw-incidence-lineplots-1991-2017
     product: _products/visualization/lineplots/incidence-lineplots-1991-2017.png
-
-  - source: tasks.vis.stacked_barplot.draw_stacked_bars_with_amounts_by_code_category
-    name: draw-stacked-bars-with-amounts-by-code-category-[[criterion]]
-    params:
-      codeColors: "{{code_colors}}"
-      causeName: "{{cause_name}}"
-    product: _products/visualization/stacked/codes-stacked-barplot-[[criterion]].png
-    grid:
-      criterion: [all, male, female]
 
   # rates:
   - source: tasks.rates.get_annual_rates_grouping_by_age
@@ -111,12 +98,6 @@ tasks:
     name: get-national-proportional-mortality
     product: _products/national/mortality/national_proportional_mortality.parquet
 
-  - source: tasks.national.mortality.get_proportional_mortality_per_period
-    name: get-national-proportional-mortality-per-period
-    params:
-      groupingOfYears: "{{grouping_of_years}}"
-    product: _products/national/mortality/national_proportional_mortality_per_period.parquet
-
   - source: tasks.national.mortality.get_annual_proportional_mortality_by_group
     name: get-annual-proportional-mortality-by-group
     product: _products/national/mortality/annual-proportional-mortality-by-group.parquet
@@ -129,9 +110,33 @@ tasks:
     name: get-annual-proportional-mortality-by-group-year
     product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
 
-  - source: tasks.national.get.aggr_deceases_by_year_by_sex_arg
-    name: aggr-deceases-1991-2017-by-year-by-sex-arg
+  - source: tasks.national.aggr.aggr_cause_specific_deceases_by_sex_by_year
+    name: aggr-cause-specific-deceases-by-sex-by-year-arg
+    product: _products/national/aggr/cause-specific-deceases-by-sex-by-year-arg.parquet
+
+  - source: tasks.national.aggr.aggr_cause_specific_deceases_by_sex_by_period
+    name: aggr-cause-specific-deceases-by-sex-by-period
+    params:
+      groupingOfYears: "{{grouping_of_years}}"
+    product: _products/national/aggr/cause-specific-deceases-by-sex-by-period.parquet
+
+  - source: tasks.national.aggr.aggr_deceases_by_sex_by_year
+    name: aggr-deceases-by-sex-by-year-arg
     product: _products/national/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
+
+  - source: tasks.national.aggr.aggr_deceases_by_sex_by_period
+    name: aggr-deceases-by-sex-by-period-arg
+    params:
+      groupingOfYears: "{{grouping_of_years}}"
+    product: _products/national/aggr/deceases-by-sex-by-period-arg.parquet
+
+  - source: tasks.national.get.getAnnualCauseSpecificMortalityRate
+    name: get-national-annual-csmr
+    product: _products/national/csmr/national_annual_csmr.parquet
+
+  - source: tasks.national.get.getPeriodicalCauseSpecificMortalityRate
+    name: get-national-periodical-csmr
+    product: _products/national/csmr/national_periodical_csmr.parquet
 
   - source: tasks.national.vis.barplots.draw_all_and_specific_deceases_barplots
     name: draw-all-and-specific-deceases-barplots
@@ -177,6 +182,16 @@ tasks:
       causeName: "{{cause_name}}"
       catplotArgs: "{{catplot_args}}"
     product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-all-and-specific-deceases.png
+
+  - source: tasks.national.vis.stacked_barplot.draw_stacked_bars_with_amounts_by_code_category
+    name: draw-stacked-bars-with-amounts-by-code-category-[[criterion]]-[[applyDataNormalization]]
+    params:
+      colorsForEachGroup: "{{colorsForEachCIEGroup}}"
+      causeName: "{{cause_name}}"
+    product: _products/national/vis/stacked-barplots/codes-stacked-barplot-[[criterion]]-[[applyDataNormalization]].png
+    grid:
+      criterion: [all, male, female]
+      applyDataNormalization: [absolute, normalized]
 
   #
   # Departmental tasks.

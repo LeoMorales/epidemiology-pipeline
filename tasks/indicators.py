@@ -3,10 +3,10 @@ import pandas
 
 def get_causes_incidence(upstream, product):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-deceases-by-sex-by-year-arg"])
     )
     df_causes_subset_deceases = pandas.read_parquet(
-        str(upstream["aggr-cause-specific-deceases-1991-2017-by-year-by-sex-arg"])
+        str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
     )
 
     # 3. combine
@@ -14,24 +14,22 @@ def get_causes_incidence(upstream, product):
 
     incidence_df = df[["year"]].copy()
 
-    incidence_df["causes_incidence"] = (
-        df["deceases_subset_causes"] / df["deceases"]
+    incidence_df["csmr"] = (df["cause_specific_deceases"] / df["deceases"]) * 100_000
+
+    incidence_df["csmr_male"] = (
+        df["cause_specific_deceases_male"] / df["deceases"]
     ) * 100_000
 
-    incidence_df["causes_incidence_male"] = (
-        df["deceases_subset_causes_varon"] / df["deceases"]
+    incidence_df["csmr_female"] = (
+        df["cause_specific_deceases_female"] / df["deceases"]
     ) * 100_000
 
-    incidence_df["causes_incidence_female"] = (
-        df["deceases_subset_causes_mujer"] / df["deceases"]
+    incidence_df["csmr_male_local"] = (
+        df["cause_specific_deceases_male"] / df["deceases_male"]
     ) * 100_000
 
-    incidence_df["causes_incidence_male_local"] = (
-        df["deceases_subset_causes_varon"] / df["deceases_varon"]
-    ) * 100_000
-
-    incidence_df["causes_incidence_female_local"] = (
-        df["deceases_subset_causes_mujer"] / df["deceases_mujer"]
+    incidence_df["csmr_female_local"] = (
+        df["cause_specific_deceases_female"] / df["deceases_female"]
     ) * 100_000
 
     incidence_df.to_parquet(str(product))
