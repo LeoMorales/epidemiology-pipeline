@@ -11,7 +11,7 @@ def getAnnualCauseSpecificMortalityRate(
         product (_type_): Output
     """
     all_deceases_df = pandas.read_parquet(
-        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+        str(upstream["aggr-deceases-annually-by-sex-arg"])
     )
     causes_specific_deceases_df = pandas.read_parquet(
         str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])

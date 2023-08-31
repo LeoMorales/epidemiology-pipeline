@@ -3,7 +3,7 @@ import pandas
 
 def get_causes_incidence(upstream, product):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+        str(upstream["aggr-deceases-annually-by-sex-arg"])
     )
     df_causes_subset_deceases = pandas.read_parquet(
         str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])

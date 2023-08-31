@@ -10,7 +10,7 @@ def draw_all_and_specific_deceases_barplots(
     upstream, product, causeCodes, applyDataNormalization
 ):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+        str(upstream["aggr-deceases-annually-by-sex-arg"])
     )
     df_cause_specific_deceases = pandas.read_parquet(
         str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])
@@ -83,7 +83,7 @@ def draw_all_and_specific_deceases_barplots(
 
 def draw_total_deceases_barplot(upstream, product, applyDataNormalization):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+        str(upstream["aggr-deceases-annually-by-sex-arg"])
     )
 
     all_decease_cols = ["deceases_female", "deceases_male"]

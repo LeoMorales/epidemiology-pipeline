@@ -8,7 +8,7 @@ from matplotlib import ticker
 
 def draw_deceases_lineplots(upstream, product, causeCodes):
     df_all_deceases = pandas.read_parquet(
-        str(upstream["aggr-deceases-by-sex-by-year-arg"])
+        str(upstream["aggr-deceases-annually-by-sex-arg"])
     )
     df_deceases_of_interest = pandas.read_parquet(
         str(upstream["aggr-cause-specific-deceases-by-sex-by-year-arg"])

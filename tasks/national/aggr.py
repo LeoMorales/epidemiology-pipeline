@@ -2,7 +2,7 @@ import pandas
 from epidemiology_package import cleanning
 
 
-def aggr_deceases_by_sex_by_year(upstream, product):
+def aggr_deceases_annually_by_sex(upstream, product):
     """Genera el dataset con el recuento de falleciminetos totales y los fallecimentos deagrupados segun seexo.
 
     <class 'pandas.core.frame.DataFrame'>
@@ -336,3 +336,120 @@ def aggr_cause_specific_deceases_by_sex_by_period(upstream, product, groupingOfY
         )
 
     cause_specifict_deceases_df.to_parquet(str(product))
+
+
+def aggrDeceasesAnnuallyBySexByAgeGroup(upstream, product, age_category_order):
+    """
+    Retorna las cantidades anuales de fallecimientos en toda la Argentina, agrupadas por sex y grupo etario.
+
+    Args:
+        upstream (_type_): Input
+        product (_type_): Output
+        age_category_order (list): Lista con el order de las etiquetas de agrupamiento etario
+
+    Returns:
+        pandas.DataFrame: Datos agrupados.
+           year     sex age_group  cause_specific_deceases
+        0  1997  female     0 - 4                       XX
+        1  1997  female     5 - 9                       XX
+        2  1997  female   10 - 14                       XX
+    """
+    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
+
+    SEX_CODE_MAPPING = {
+        "1": "male",
+        "2": "female",
+        "9": "undetermined",
+        "3": "undetermined",
+        "99": "undetermined",
+    }
+
+    df["sex"] = df["sexo"].astype(str).map(SEX_CODE_MAPPING)
+
+    workingColumns = ["codigo_defuncion", "sex", "year", "age_group"]
+    # la columna codigo_defuncion se utiliza solo para contar
+
+    df = df[workingColumns]
+    df = df[df["sex"].isin(["male", "female"])]
+
+    # asignar un 0 a '0-4', un 1 a '5-9', etc...
+    age_category_order_dict = {
+        category: order
+        for category, order in zip(age_category_order, range(len(age_category_order)))
+    }
+
+    counts_df = (
+        df.groupby(["year", "sex", "age_group"])
+        .count()
+        .rename(columns=dict(codigo_defuncion="deceases"))
+        .reset_index()
+    )
+
+    output_df = (
+        counts_df.assign(
+            age_group_order=counts_df["age_group"].map(age_category_order_dict)
+        )
+        .sort_values(by=["year", "sex", "age_group_order"])
+        .drop(columns="age_group_order")
+        .reset_index(drop=True)
+    )
+
+    output_df.to_parquet(str(product))
+
+
+def aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup(
+    upstream, product, age_category_order
+):
+    """Retorna las cantidades anuales de fallecimientos por causas específicas en toda la Argentina, agrupadas por sex y grupoetario.
+
+    Args:
+        upstream (_type_): Input
+        product (_type_): Output
+        age_category_order (list): Lista con el order de las etiquetas de agrupamiento etario
+
+    Returns:
+        pandas.DataFrame: Datos agrupados.
+               year     sex age_group  cause_specific_deceases
+            0  1997  female     0 - 4                       XX
+            1  1997  female     5 - 9                       XX
+            2  1997  female   10 - 14                       XX
+    """
+    df = pandas.read_parquet(str(upstream["filter-cause-specific-deceases-1991-2017"]))
+
+    SEX_CODE_MAPPING = {
+        "1": "male",
+        "2": "female",
+        "9": "undetermined",
+        "3": "undetermined",
+        "99": "undetermined",
+    }
+
+    df["sex"] = df["sexo"].astype(str).map(SEX_CODE_MAPPING)
+
+    workingColumns = ["codigo_defuncion", "sex", "year", "age_group"]
+
+    df = df[workingColumns]
+    df = df[df["sex"].isin(["male", "female"])]
+
+    age_category_order_dict = {
+        category: order
+        for category, order in zip(age_category_order, range(len(age_category_order)))
+    }
+
+    counts_df = (
+        df.groupby(["year", "sex", "age_group"])
+        .count()
+        .rename(columns=dict(codigo_defuncion="cause_specific_deceases"))
+        .reset_index()
+    )
+
+    output_df = (
+        counts_df.assign(
+            age_group_order=counts_df["age_group"].map(age_category_order_dict)
+        )
+        .sort_values(by=["year", "sex", "age_group_order"])
+        .drop(columns="age_group_order")
+        .reset_index(drop=True)
+    )
+
+    output_df.to_parquet(str(product))

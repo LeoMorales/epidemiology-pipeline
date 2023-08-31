@@ -11,11 +11,13 @@ tasks:
     name: get-cleaned-data-1991-2017
     product: _products/clean/deceases-1991-2017.parquet
 
-  - source: tasks.visualization.draw_deceases_lineplots
-    name: draw-deceases-lineplots-1991-2017
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/visualization/lineplots/deceases-lineplots-1991-2017.png
+  - source: tasks.national.clean.getFemalePopulationAnnuallyByAgeGroup
+    name: get-female-population-annually-by-age-group
+    product: _products/clean/female-population-annually-by-age-group.parquet
+
+  - source: tasks.national.clean.getMalePopulationAnnuallyByAgeGroup
+    name: get-male-population-annually-by-age-group
+    product: _products/clean/male-population-annually-by-age-group.parquet
 
   - source: tasks.filter.filter_departamental_records
     name: filter-departamental-records-1991-2017
@@ -102,10 +104,6 @@ tasks:
     name: get-annual-proportional-mortality-by-group
     product: _products/national/mortality/annual-proportional-mortality-by-group.parquet
 
-  - source: tasks.national.mortality.get_annual_proportional_mortality_by_sex
-    name: get-annual-proportional-mortality-by-sex
-    product: _products/national/mortality/annual-proportional-mortality-by-sex.parquet
-
   - source: tasks.national.mortality.get_annual_proportional_mortality_by_group_year
     name: get-annual-proportional-mortality-by-group-year
     product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
@@ -120,15 +118,27 @@ tasks:
       groupingOfYears: "{{grouping_of_years}}"
     product: _products/national/aggr/cause-specific-deceases-by-sex-by-period.parquet
 
-  - source: tasks.national.aggr.aggr_deceases_by_sex_by_year
-    name: aggr-deceases-by-sex-by-year-arg
-    product: _products/national/get/deceases-1991-2017-by-year-by-sex-arg-all.parquet
+  - source: tasks.national.aggr.aggr_deceases_annually_by_sex
+    name: aggr-deceases-annually-by-sex-arg
+    product: _products/national/get/annual-deceases-by-sex-arg.parquet
 
   - source: tasks.national.aggr.aggr_deceases_by_sex_by_period
     name: aggr-deceases-by-sex-by-period-arg
     params:
       groupingOfYears: "{{grouping_of_years}}"
     product: _products/national/aggr/deceases-by-sex-by-period-arg.parquet
+
+  - source: tasks.national.aggr.aggrDeceasesAnnuallyBySexByAgeGroup
+    name: aggr-deceases-annually-by-sex-by-age-group
+    params:
+      age_category_order: "{{age_category_causes_display_order}}"
+    product: _products/national/aggr/deceases-annually-by-sex-by-age-group-arg.parquet
+
+  - source: tasks.national.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
+    name: aggr-cause-specific-deceases-annually-by-sex-by-age-group
+    params:
+      age_category_order: "{{age_category_causes_display_order}}"
+    product: _products/national/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
 
   - source: tasks.national.get.getAnnualCauseSpecificMortalityRate
     name: get-national-annual-csmr
@@ -193,6 +203,10 @@ tasks:
       criterion: [all, male, female]
       applyDataNormalization: [absolute, normalized]
 
+  - source: tasks.national.vis.lineplot.draw_annual_csmr_lineplots
+    name: draw-annual-csmr-lineplots
+    product: _products/national/vis/lineplots/annual-csmr-lineplots.png
+
   #
   # Departmental tasks.
   #
@@ -205,6 +219,13 @@ tasks:
     params:
       groupingOfYears: "{{grouping_of_years}}"
     product: _products/departmental/mortality/departmental-proportional-mortality-per-period.parquet
+
+  # vis refactor
+  - source: tasks.visualization.draw_deceases_lineplots
+    name: draw-deceases-lineplots-1991-2017
+    params:
+      causeCodes: "{{causes_codes}}"
+    product: _products/visualization/lineplots/deceases-lineplots-1991-2017.png
 
   # report:
   - source: tasks.report.create_report
