@@ -400,7 +400,7 @@ def aggrDeceasesAnnuallyBySexByAgeGroup(upstream, product, age_category_order):
 def aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup(
     upstream, product, age_category_order
 ):
-    """Retorna las cantidades anuales de fallecimientos por causas específicas en toda la Argentina, agrupadas por sex y grupoetario.
+    """Retorna las cantidades anuales de fallecimientos por causas específicas en toda la Argentina, agrupadas por sex y grupo etario.
 
     Args:
         upstream (_type_): Input

@@ -93,6 +93,23 @@ tasks:
       groupingOfYears: "{{grouping_of_years}}"
     product: _products/provincial/mortality/provincial_proportional_mortality_per_period.parquet
 
+  - source: tasks.provincial.clean.cleaningAnnualPopulationProjectionsForSexByAgeGroup
+    name: cleaning-annual-population-projections-for-sex-by-age-group
+    product: _products/provincial/clean/annual-population-projections-for-sex-by-age-group.parquet
+
+  - source: tasks.provincial.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
+    name: aggr-provincial-cause-specific-deceases-annually-by-sex-by-age-group
+    params:
+      age_category_order: "{{age_category_causes_display_order}}"
+    product: _products/provincial/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
+
+  # Regional tasks
+  - source: tasks.regional.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
+    name: aggr-regional-cause-specific-deceases-annually-by-sex-by-age-group
+    params:
+      age_category_order: "{{age_category_causes_display_order}}"
+    product: _products/regional/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
+
   #
   # National tasks.
   #
@@ -129,13 +146,13 @@ tasks:
     product: _products/national/aggr/deceases-by-sex-by-period-arg.parquet
 
   - source: tasks.national.aggr.aggrDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-deceases-annually-by-sex-by-age-group
+    name: aggr-national-deceases-annually-by-sex-by-age-group
     params:
       age_category_order: "{{age_category_causes_display_order}}"
     product: _products/national/aggr/deceases-annually-by-sex-by-age-group-arg.parquet
 
   - source: tasks.national.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-cause-specific-deceases-annually-by-sex-by-age-group
+    name: aggr-national-cause-specific-deceases-annually-by-sex-by-age-group
     params:
       age_category_order: "{{age_category_causes_display_order}}"
     product: _products/national/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
