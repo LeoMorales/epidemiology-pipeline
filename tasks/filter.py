@@ -2,21 +2,6 @@ import pandas
 from epidemiology_package import utils
 
 
-def __assign_name(department_code):
-    return utils.DEPARTMENT_CODES_MAPPING.get(department_code, None)
-
-
-def filter_departamental_records(upstream, product):
-    df = pandas.read_parquet(str(upstream["get-cleaned-data-1991-2017"]))
-    df["department_name"] = df["department_id"].apply(__assign_name)
-
-    not_null_department_name = ~(df["department_name"].isna())
-    not_unknown_department_name = ~(df["department_name"] == "DESCONOCIDO")
-    departamental_df = df[not_null_department_name & not_unknown_department_name]
-
-    departamental_df.to_parquet(str(product))
-
-
 def get_cause_specific_deceases_1991_2017(upstream, product, causeCodes):
     df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
 

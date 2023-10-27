@@ -19,10 +19,6 @@ tasks:
     name: get-male-population-annually-by-age-group
     product: _products/clean/male-population-annually-by-age-group.parquet
 
-  - source: tasks.filter.filter_departamental_records
-    name: filter-departamental-records-1991-2017
-    product: _products/filter/deceases-departmentals-1991-2017.parquet
-
   - source: tasks.filter.get_cause_specific_deceases_1991_2017
     name: filter-cause-specific-deceases-1991-2017
     params:
