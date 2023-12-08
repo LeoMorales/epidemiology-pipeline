@@ -1,250 +1,39 @@
 tasks:
-  - source: tasks.raw.get_raw_dataframes
-    name: get-raw-dataframes
+  - source: tasks.raw.get_raw_deceases_data
+    name: get-raw-deceases-data
     product:
       1991-2000: _products/raw/deceases-1991-2000.parquet
       2001-2014: _products/raw/deceases-2001-2014.parquet
       2015-2017: _products/raw/deceases-2015-2017.parquet
 
-  # ['provincia_id', 'department_id', 'codigo_defuncion', 'sexo', 'edad', 'unidad_edad', 'year', 'mes_defuncion']
-  - source: tasks.clean.get_cleaned_data_1991_2017
-    name: get-cleaned-data-1991-2017
-    product: _products/clean/deceases-1991-2017.parquet
+  - source: tasks.clean.get_clean_deceases_data
+    name: get-clean-deceases-data
+    params:
+      age_group_mapping: "{{age_groups}}"
+    product: _products/clean/cleaned-deceases-data.parquet
 
-  - source: tasks.national.clean.getFemalePopulationAnnuallyByAgeGroup
-    name: get-female-population-annually-by-age-group
-    product: _products/clean/female-population-annually-by-age-group.parquet
+  #- source: tasks.clean.profile_cleaned_deceases_data
+  #  name: profile-cleaned-deceases-data
+  #  product: _products/clean/profile-deceases-data.html
 
-  - source: tasks.national.clean.getMalePopulationAnnuallyByAgeGroup
-    name: get-male-population-annually-by-age-group
-    product: _products/clean/male-population-annually-by-age-group.parquet
-
-  - source: tasks.filter.get_cause_specific_deceases_1991_2017
-    name: filter-cause-specific-deceases-1991-2017
+  - source: tasks.filter.get_cause_specific_deceases_data
+    name: get-cause-specific-deceases-data
     params:
       causeCodes: "{{causes_codes}}"
-    product: _products/filter/cause-specific-deceases-1991-2017.parquet
+    product: _products/filter/get-cause-specific-deceases-data.parquet
 
-  - source: tasks.get.get_all_deceases_1991_2017
-    name: get-deceases-1991-2017
+  - source: tasks.population.get_clean_population_province_age_group
+    name: get-clean-population-province-age-group
+    product: _products/population/population-province-age-group.parquet
+
+  # Resultados: Tabla 1
+  - source: tasks.general.mortality.get_cause_specific_rate_for_divisions
+    name: get-cause-specific-rate-for-divisions
+    product: _products/general/cause-specific-rate-for-divisions.parquet
+
+  # Resultados: Tabla 2
+  - source: tasks.national.entire_period.mortality.get_cause_specific_rate_by_age_group_and_sex
+    name: national-entire-period-get-cause-specific-rate-by-age-group-and-sex
     params:
-      ageGroupMapping: "{{age_groups}}"
-    product: _products/get/deceases-1991-2017-with-age-group-label.parquet
-
-  - source: tasks.indicators.get_causes_incidence
-    name: get-subset-of-causes-incidence
-    product: _products/indicators/incidence-1991-2017.parquet
-
-  - source: tasks.visualization.draw_incidence_lineplots
-    name: draw-incidence-lineplots-1991-2017
-    product: _products/visualization/lineplots/incidence-lineplots-1991-2017.png
-
-  # rates:
-  - source: tasks.rates.get_annual_rates_grouping_by_age
-    name: get-annual-rates-grouping-by-age
-    params:
-      causesCodes: "{{causes_codes}}"
-    product: _products/rates/annual-rates-grouping-by-age.parquet
-
-  - source: tasks.visualization.draw_age_grouping_rates_lineplot
-    name: draw-age-grouping-rates-lineplot
-    params:
-      ageCategoriesOrder: "{{age_category_causes_display_order}}"
-    product: _products/visualization/lineplots/age-grouping-rates-lineplot.png
-
-  - source: tasks.csmr.calculate_annual_csmr_per_province
-    name: get-annual-csmr-per-province
-    product: _products/csmr/annual-csmr-per-province.parquet
-
-  - source: tasks.csmr.draw_csmr_heatmap_provincial
-    name: draw-csmr-heatmap-provincial
-    product: _products/csmr/csmr-heatmap-provincial.png
-
-  - source: tasks.csmr.calculate_annual_csmr_per_province_by_age_group
-    name: get-annual-csmr-per-province-by-age-group
-    product: _products/csmr/annual-csmr-per-province-by-age-group.parquet
-
-  - source: tasks.csmr.pivot_provincial_csmr_by_age_group_data
-    name: csmr-per-province-by-age-group-pivoted
-    params:
-      _ageGroups: "{{age_groups}}"
-    product: _products/csmr/csmr-per-province-by-age-group-pivoted.parquet
-
-  - source: tasks.csmr.draw_csmr_heatmap_provincial_of_region
-    name: draw-csmr-heatmap-provincial-of-region-[[regionName]]
-    product: _products/csmr/regionals/csmr-heatmap-provincial-of-region-[[regionName]].png
-    grid:
-      regionName: [NOA, NEA, Cuyo, Centro, Patagonia]
-
-  #
-  # Provincial tasks.
-  #
-  - source: tasks.provincial.mortality.get_proportional_mortality
-    name: get-provincial-proportional-mortality
-    product: _products/provincial/mortality/provincial_proportional_mortality.parquet
-
-  - source: tasks.provincial.mortality.get_proportional_mortality_per_period
-    name: get-provincial-proportional-mortality-per-period
-    params:
-      groupingOfYears: "{{grouping_of_years}}"
-    product: _products/provincial/mortality/provincial_proportional_mortality_per_period.parquet
-
-  - source: tasks.provincial.clean.cleaningAnnualPopulationProjectionsForSexByAgeGroup
-    name: cleaning-annual-population-projections-for-sex-by-age-group
-    product: _products/provincial/clean/annual-population-projections-for-sex-by-age-group.parquet
-
-  - source: tasks.provincial.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-provincial-cause-specific-deceases-annually-by-sex-by-age-group
-    params:
-      age_category_order: "{{age_category_causes_display_order}}"
-    product: _products/provincial/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
-
-  # Regional tasks
-  - source: tasks.regional.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-regional-cause-specific-deceases-annually-by-sex-by-age-group
-    params:
-      age_category_order: "{{age_category_causes_display_order}}"
-    product: _products/regional/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
-
-  #
-  # National tasks.
-  #
-  - source: tasks.national.mortality.get_proportional_mortality
-    name: get-national-proportional-mortality
-    product: _products/national/mortality/national_proportional_mortality.parquet
-
-  - source: tasks.national.mortality.get_annual_proportional_mortality_by_group
-    name: get-annual-proportional-mortality-by-group
-    product: _products/national/mortality/annual-proportional-mortality-by-group.parquet
-
-  - source: tasks.national.mortality.get_annual_proportional_mortality_by_group_year
-    name: get-annual-proportional-mortality-by-group-year
-    product: _products/national/mortality/annual-proportional-mortality-by-group-year.parquet
-
-  - source: tasks.national.aggr.aggr_cause_specific_deceases_by_sex_by_year
-    name: aggr-cause-specific-deceases-by-sex-by-year-arg
-    product: _products/national/aggr/cause-specific-deceases-by-sex-by-year-arg.parquet
-
-  - source: tasks.national.aggr.aggr_cause_specific_deceases_by_sex_by_period
-    name: aggr-cause-specific-deceases-by-sex-by-period
-    params:
-      groupingOfYears: "{{grouping_of_years}}"
-    product: _products/national/aggr/cause-specific-deceases-by-sex-by-period.parquet
-
-  - source: tasks.national.aggr.aggr_deceases_annually_by_sex
-    name: aggr-deceases-annually-by-sex-arg
-    product: _products/national/get/annual-deceases-by-sex-arg.parquet
-
-  - source: tasks.national.aggr.aggr_deceases_by_sex_by_period
-    name: aggr-deceases-by-sex-by-period-arg
-    params:
-      groupingOfYears: "{{grouping_of_years}}"
-    product: _products/national/aggr/deceases-by-sex-by-period-arg.parquet
-
-  - source: tasks.national.aggr.aggrDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-national-deceases-annually-by-sex-by-age-group
-    params:
-      age_category_order: "{{age_category_causes_display_order}}"
-    product: _products/national/aggr/deceases-annually-by-sex-by-age-group-arg.parquet
-
-  - source: tasks.national.aggr.aggrCauseSpecificDeceasesAnnuallyBySexByAgeGroup
-    name: aggr-national-cause-specific-deceases-annually-by-sex-by-age-group
-    params:
-      age_category_order: "{{age_category_causes_display_order}}"
-    product: _products/national/aggr/cause-specific-deceases-annually-by-sex-by-age-group-arg.parquet
-
-  - source: tasks.national.get.getAnnualCauseSpecificMortalityRate
-    name: get-national-annual-csmr
-    product: _products/national/csmr/national_annual_csmr.parquet
-
-  - source: tasks.national.get.getPeriodicalCauseSpecificMortalityRate
-    name: get-national-periodical-csmr
-    product: _products/national/csmr/national_periodical_csmr.parquet
-
-  - source: tasks.national.vis.barplots.draw_all_and_specific_deceases_barplots
-    name: draw-all-and-specific-deceases-barplots
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/national/vis/barplots/barplots-all-and-specific-deceases-barplots-side-by-side.png
-    grid:
-      applyDataNormalization: [false, true]
-
-  - source: tasks.national.vis.barplots.draw_total_deceases_barplot
-    name: draw-national-total-deceases-barplot-1991-2017
-    product: _products/national/vis/barplots/barplot-total-deceases-1991-2017.png
-    grid:
-      applyDataNormalization: [false, true]
-
-  - source: tasks.national.vis.barplots.draw_cause_specific_deceases_barplot
-    name: draw-national-cause-specific-deceases-barplot-1991-2017
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/national/vis/barplots/barplot-cause-specific-deceases-1991-2017.png
-    grid:
-      applyDataNormalization: [false, true]
-
-  - source: tasks.national.vis.barplots.draw_deceases_barplot_categorized_by_sex_by_age
-    name: draw-deceases-barplot-categorized-by-sex-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_causes_display_order}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-all-deceases.png
-
-  - source: tasks.national.vis.barplots.draw_cause_specific_deceases_barplot_categorized_by_sex_by_age
-    name: draw-cause-specific-deceases-barplot-categorized-by-sex-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_causes_display_order}}"
-      causeName: "{{cause_name}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-cause-specific-deceases.png
-
-  - source: tasks.national.vis.barplots.draw_all_and_specific_deceases_barchart_by_sex_by_age
-    name: draw-all-and-specific-deceases-barchart-by-sex-by-age
-    params:
-      categoryDisplayOrder: "{{age_category_causes_display_order}}"
-      causeName: "{{cause_name}}"
-      catplotArgs: "{{catplot_args}}"
-    product: _products/national/vis/barplots/barplot-categorized-by-sex-by-age-all-and-specific-deceases.png
-
-  - source: tasks.national.vis.stacked_barplot.draw_stacked_bars_with_amounts_by_code_category
-    name: draw-stacked-bars-with-amounts-by-code-category-[[criterion]]-[[applyDataNormalization]]
-    params:
-      colorsForEachGroup: "{{colorsForEachCIEGroup}}"
-      causeName: "{{cause_name}}"
-    product: _products/national/vis/stacked-barplots/codes-stacked-barplot-[[criterion]]-[[applyDataNormalization]].png
-    grid:
-      criterion: [all, male, female]
-      applyDataNormalization: [absolute, normalized]
-
-  - source: tasks.national.vis.lineplot.draw_annual_csmr_lineplots
-    name: draw-annual-csmr-lineplots
-    product: _products/national/vis/lineplots/annual-csmr-lineplots.png
-
-  #
-  # Departmental tasks.
-  #
-  - source: tasks.departmental.mortality.get_proportional_mortality
-    name: get-departmental-proportional-mortality
-    product: _products/departmental/mortality/departmental-proportional-mortality.parquet
-
-  - source: tasks.departmental.mortality.get_proportional_mortality_per_period
-    name: get-departmental-proportional-mortality-per-period
-    params:
-      groupingOfYears: "{{grouping_of_years}}"
-    product: _products/departmental/mortality/departmental-proportional-mortality-per-period.parquet
-
-  # vis refactor
-  - source: tasks.visualization.draw_deceases_lineplots
-    name: draw-deceases-lineplots-1991-2017
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/visualization/lineplots/deceases-lineplots-1991-2017.png
-
-  # report:
-  - source: tasks.report.create_report
-    name: create-report
-    params:
-      causeName: "{{cause_name}}"
-      causesCodes: "{{causes_codes}}"
-      ageCategoryCauses: "{{age_category_causes_display_order}}"
-    product: _products/report/reporte.pdf
+      age_group_mapping: "{{age_groups}}"
+    product: _products/national/entire-period/cause-specific-rate-by-age-group-and-sex.parquet

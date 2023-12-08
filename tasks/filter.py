@@ -1,9 +1,15 @@
 import pandas
-from epidemiology_package import utils
 
 
-def get_cause_specific_deceases_1991_2017(upstream, product, causeCodes):
-    df = pandas.read_parquet(str(upstream["get-deceases-1991-2017"]))
+def get_cause_specific_deceases_data(upstream, product, causeCodes):
+    """Filtra los registros correspondientes a las causas especificas que se están analizando.
+
+    Args:
+        upstream (_type_): Input
+        product (_type_): Output
+        causeCodes (list): Lista de códigos CIE-10
+    """
+    df = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
 
     # df[df['codigo_defuncion'].isin(causeCodes)].head()
     _causeCodes = [str(code) for code in causeCodes]

@@ -1,26 +1,11 @@
 import pandas
 from surnames_package import cleaning
-from epidemiology_package import cleanning as epi_cleanning
-from ydata_profiling import ProfileReport
-from surnames_package import utils
 
 
-def get_clean_deceases_data(product, upstream, age_group_mapping):
-    """Devuelve la base completa de fallecimientos.
-
-    Args:
-        product (_type_): Input
-        upstream (_type_): Output
-    """
-    df_1991_2000 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["1991-2000"])
-    )
-    df_2001_2014 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["2001-2014"])
-    )
-    df_2015_2017 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["2015-2017"])
-    )
+def get_cleaned_data_1991_2017(product, upstream):
+    df_1991_2000 = pandas.read_parquet(str(upstream["get-raw-dataframes"]["1991-2000"]))
+    df_2001_2014 = pandas.read_parquet(str(upstream["get-raw-dataframes"]["2001-2014"]))
+    df_2015_2017 = pandas.read_parquet(str(upstream["get-raw-dataframes"]["2015-2017"]))
 
     COLUMNS_MAPPING_2001_2014 = {
         "JURI": "jurisdiccion",
@@ -297,56 +282,11 @@ def get_clean_deceases_data(product, upstream, age_group_mapping):
     # 06217 es Chascomus antes del 2011, así que homogeneizamos reescribiendo a 06218 (Chascomus actual, y el usado en la capa geográfica)
     df["department_id"] = df["department_id"].replace("06217", "06218")
 
-    integer_cols = ["sexo", "unidad_edad", "year"]
+    integer_cols = ["sexo", "unidad_edad"]
     for int_col in integer_cols:
         df[int_col] = pandas.to_numeric(df[int_col], errors="coerce")
         df[int_col] = df[int_col].fillna(99)
         df[int_col] = df[int_col].astype(int)
 
-    df["age_in_years"] = epi_cleanning.get_age_in_years(df["edad"], df["unidad_edad"])
-
-    # reescribir variable sexo
-    SEX_CODE_MAPPING = {
-        "1": "male",
-        "2": "female",
-    }
-
-    df["sex"] = (
-        df["sexo"]
-        .astype(str)
-        .map(lambda sex_code: SEX_CODE_MAPPING.get(sex_code, "undetermined"))
-    )
-
-    codigos_provincia_validos = list(utils.PROVINCE_NAME_BY_ID.keys())
-    df = df[df["provincia_id"].isin(codigos_provincia_validos)]
-
-    # asignar etiqueta de grupo etario
-    df["age_group"] = "NOT-ASSIGNED"
-
-    # por cada etiqueta y rango:
-    for label, label_range in age_group_mapping.items():
-        range_a, range_b = label_range
-        age_range = list(range(range_a, range_b + 1))
-
-        range_mask = df["age_in_years"].isin(age_range)
-        df.loc[range_mask, "age_group"] = label
-
-    selected_cols = [
-        "provincia_id",
-        "department_id",
-        "codigo_defuncion",
-        "sex",
-        "year",
-        "age_in_years",
-        "age_group",
-    ]
-    df = df[selected_cols]
-
     df = df.reset_index(drop=True)
     df.to_parquet(str(product))
-
-
-def profile_cleaned_deceases_data(upstream, product):
-    df = pandas.read_parquet(upstream["get-clean-deceases-data"])
-    profile = ProfileReport(df, title="Clean Data Profiling Report")
-    profile.to_file(str(product))
