@@ -2,7 +2,7 @@ import pandas
 from surnames_package import utils
 
 
-def get_cause_specific_rate_for_divisions(upstream, product):
+def get_csmr_for_divisions(upstream, product):
     fallecimientos_df = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
     causas_especificas_df = pandas.read_parquet(
         str(upstream["get-cause-specific-deceases-data"])

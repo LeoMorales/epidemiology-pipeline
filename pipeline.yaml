@@ -27,13 +27,26 @@ tasks:
     product: _products/population/population-province-age-group.parquet
 
   # Resultados: Tabla 1
-  - source: tasks.general.mortality.get_cause_specific_rate_for_divisions
-    name: get-cause-specific-rate-for-divisions
+  - source: tasks.general.mortality.get_csmr_for_divisions
+    name: get-csmr-for-divisions
     product: _products/general/cause-specific-rate-for-divisions.parquet
 
   # Resultados: Tabla 2
-  - source: tasks.national.entire_period.mortality.get_cause_specific_rate_by_age_group_and_sex
-    name: national-entire-period-get-cause-specific-rate-by-age-group-and-sex
+  - source: tasks.national.entire_period.mortality.get_csmr_by_age_group_and_sex
+    name: national-entire-period-get-csmr-by-age-group-and-sex
     params:
       age_group_mapping: "{{age_groups}}"
     product: _products/national/entire-period/cause-specific-rate-by-age-group-and-sex.parquet
+
+  # Departamental
+  - source: tasks.departmental.mortality.get_csmr_by_period
+    name: get-departmental-csmr-by-period
+    product: _products/departmental/csmr-by-period.parquet
+
+  - source: tasks.departmental.visualizations.get_csmr_clustermaps
+    name: get-csmr-clustermaps-by-period
+    product: _products/departmental/visualizations/clustermaps
+
+  - source: tasks.departmental.analysis.get_csmr_moran_clustermaps
+    name: get-csmr-moran-clustermap-by-period
+    product: _products/departmental/analysis/moran-clustermaps

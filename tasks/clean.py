@@ -1,7 +1,8 @@
 import pandas
 from surnames_package import cleaning
 from epidemiology_package import cleanning as epi_cleanning
-from ydata_profiling import ProfileReport
+
+# from ydata_profiling import ProfileReport
 from surnames_package import utils
 
 
@@ -346,7 +347,7 @@ def get_clean_deceases_data(product, upstream, age_group_mapping):
     df.to_parquet(str(product))
 
 
-def profile_cleaned_deceases_data(upstream, product):
-    df = pandas.read_parquet(upstream["get-clean-deceases-data"])
-    profile = ProfileReport(df, title="Clean Data Profiling Report")
-    profile.to_file(str(product))
+# def profile_cleaned_deceases_data(upstream, product):
+#    df = pandas.read_parquet(upstream["get-clean-deceases-data"])
+#    profile = ProfileReport(df, title="Clean Data Profiling Report")
+#    profile.to_file(str(product))

@@ -1,7 +1,7 @@
 import pandas
 
 
-def get_cause_specific_rate_by_age_group_and_sex(product, upstream, age_group_mapping):
+def get_csmr_by_age_group_and_sex(product, upstream, age_group_mapping):
     df_fallecimientos = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
     df_causas_especificas = pandas.read_parquet(
         str(upstream["get-cause-specific-deceases-data"])
