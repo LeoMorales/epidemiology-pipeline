@@ -1,7 +1,25 @@
+# Calcular tasas / indicadores para todo el período
+# Modularizado de esta forma se busca encapsular tasas generales, por sexo, por edad, por sexo y edad, etc
+
 import pandas
 
 
 def get_csmr_by_age_group_and_sex(product, upstream, age_group_mapping):
+    """Retorna una tabla con las cantidades absolutas para todo el período y la csmr correspondiente, separando en varones y mujeres (columnas) y en grupos etarios (filas).
+
+    Columnas de la tabla:
+        'EDADES', 'Fallecimientos mujeres',
+        'Fallecimientos varones', 'Fallecimientos EPOF mujeres',
+        'Fallecimientos EPOF varones', 'Porcentaje sobre total mujeres',
+        'Porcentaje sobre total varones', 'Tasa por cada 1000 mujeres',
+        'Tasa por cada 1000 varones'
+
+    Args:
+        product (ploomber): entreada
+        upstream (ploomber): salida
+        age_group_mapping (dict): 
+            Las claves tienen la etiqueta de agrupamiento etario y los valores una lista de años.
+    """
     df_fallecimientos = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
     df_causas_especificas = pandas.read_parquet(
         str(upstream["get-cause-specific-deceases-data"])
@@ -124,4 +142,4 @@ def get_csmr_by_age_group_and_sex(product, upstream, age_group_mapping):
 
     df_final = df.rename(columns=cols_renaming)[cols_renaming.values()]
 
-    df_final.to_parquet(str(product))
+    df_final.to_csv(str(product))

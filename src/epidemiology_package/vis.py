@@ -46,7 +46,7 @@ def draw_barplot(
     applyDataNormalization: bool = False,
     displayTotals: bool = True,
     displayBarsPercentages: bool = True,
-    ax: matplotlib.axes._subplots.Axes = None,
+    ax = None,
 ):
     """
     Genera un grafico de barras apiladas. Cada barra representa a un año.
