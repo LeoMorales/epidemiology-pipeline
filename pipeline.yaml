@@ -10,6 +10,7 @@ tasks:
     name: get-clean-deceases-data
     params:
       age_group_mapping: "{{age_groups}}"
+      analysis_period: "{{analysis_period}}"
     product: _products/clean/cleaned-deceases-data.parquet
 
   - source: tasks.filter.get_cause_specific_deceases_data

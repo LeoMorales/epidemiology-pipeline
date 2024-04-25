@@ -6,14 +6,16 @@ from surnames_package import utils
 
 def get_csmr_for_divisions(upstream, product):
     """
-    Retorna la tabla por divisiones (es decir genérica y para departamentos, provincias, regiones) con las tasas de muertes específicas.
+    Retorna la tabla por divisiones (es decir genérica y para departamentos,
+    provincias, regiones) con las tasas de muertes específicas.
 
     Args:
         product (ploomber): entrada
         upstream (ploomber): salida
     """
     # get data
-    fallecimientos_df = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
+    fallecimientos_df = pandas.read_parquet(
+        str(upstream["get-clean-deceases-data"]))
     causas_especificas_df = pandas.read_parquet(
         str(upstream["get-cause-specific-deceases-data"])
     )
@@ -34,11 +36,12 @@ def get_csmr_for_divisions(upstream, product):
     )
 
     # filtrar años comunes
-    fallecimientos_por_provincia_por_anio = fallecimientos_por_provincia_por_anio[
-        fallecimientos_por_provincia_por_anio["year"].isin(
-            causas_especificas_por_provincia_por_anio["year"].unique()
-        )
-    ]
+    fallecimientos_por_provincia_por_anio = (
+        fallecimientos_por_provincia_por_anio[
+            fallecimientos_por_provincia_por_anio["year"].isin(
+                causas_especificas_por_provincia_por_anio["year"].unique()
+            )
+        ])
 
     # fallecimientos totales + específicos
     df = pandas.merge(
@@ -72,6 +75,14 @@ def get_csmr_for_divisions(upstream, product):
     df_regional["division"] = df_regional["region_nombre"].copy()
     df_regional = df_regional.rename(columns={"region_nombre": "nombre_orden"})
 
+    # provinciales + regionales + nacional
+    df_final = (
+        pandas.concat([df_regional, df_provincial])
+        .sort_values(by="nombre_orden")
+        .drop(columns="nombre_orden")
+    )
+    
+    #
     # contar nacionales
     valores_argentina = {
         "division": "Argentina",
@@ -89,13 +100,9 @@ def get_csmr_for_divisions(upstream, product):
         * 1000
     )
 
-    # provinciales + regionales + nacional
-    df_final = (
-        pandas.concat([df_regional, df_provincial])
-        .sort_values(by="nombre_orden")
-        .drop(columns="nombre_orden")
-    )
-    df_final = df_final.append(valores_argentina, ignore_index=True)
+    df_nacional = pandas.DataFrame([valores_argentina])
+    # df_final = df_final.append(valores_argentina, ignore_index=True)
+    df_final = pandas.concat([df_final, df_nacional])
 
     df_final["percentage_of_specific_causes"] = (
         df_final["cause_specific_deceases"] * 100 / df_final["deceases"]

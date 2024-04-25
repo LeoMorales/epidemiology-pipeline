@@ -1,18 +1,21 @@
 import pandas
+import logging
 from surnames_package import cleaning
 from epidemiology_package import cleanning as epi_cleanning
-
-# from ydata_profiling import ProfileReport
 from surnames_package import utils
 
 
-def get_clean_deceases_data(product, upstream, age_group_mapping):
+def get_clean_deceases_data(product, upstream, age_group_mapping, analysis_period):
     """Devuelve la base completa de fallecimientos.
 
     Args:
         product (_type_): Input
         upstream (_type_): Output
     """
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+
     df_1991_2000 = pandas.read_parquet(
         str(upstream["get-raw-deceases-data"]["1991-2000"])
     )
@@ -294,7 +297,7 @@ def get_clean_deceases_data(product, upstream, age_group_mapping):
             df_2015_2017[common_columns],
         ]
     )
-
+    
     # 06217 es Chascomus antes del 2011, así que homogeneizamos reescribiendo a 06218 (Chascomus actual, y el usado en la capa geográfica)
     df["department_id"] = df["department_id"].replace("06217", "06218")
 
@@ -303,6 +306,16 @@ def get_clean_deceases_data(product, upstream, age_group_mapping):
         df[int_col] = pandas.to_numeric(df[int_col], errors="coerce")
         df[int_col] = df[int_col].fillna(99)
         df[int_col] = df[int_col].astype(int)
+
+    starting_year = analysis_period[0]
+    finish_year = analysis_period[1]
+    
+    logger.info(f'Filtrando años {starting_year} - {finish_year}')
+
+    df = df[df['year'] >= starting_year].copy()
+    df = df[df['year'] <= finish_year].copy()
+    
+    logger.info(f'Filtrado finalizado')
 
     df["age_in_years"] = epi_cleanning.get_age_in_years(df["edad"], df["unidad_edad"])
 
