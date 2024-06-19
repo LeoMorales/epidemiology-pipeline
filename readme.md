@@ -1,4 +1,4 @@
-# Generic pipeline for Epidemiology in Argentina (1991-2017)
+# Generalizable pipeline for epidemiological studies in Argentina (1991-2017) based on specific diseases.
 
 Using ploomber pipelines:
 
