@@ -1,9 +1,10 @@
 import pysal
 import pandas
 import glob
+from simpledbf import Dbf5
+import geopandas
 
-
-def dbf2DF(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
+def dbf2DF_deprecated(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
     """
     This block of code copied from https://gist.github.com/ryan-hill/f90b1c68f60d12baea81
     Arguments
@@ -11,7 +12,8 @@ def dbf2DF(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
     dbfile  : DBF file - Input to be imported
     upper   : Condition - If true, make column heads upper case
     """
-    db = pysal.lib.io.open.open(dbfile)  # Pysal to open DBF
+    #db = pysal.lib.io.open.open(dbfile)  # Pysal to open DBF
+    db = pysal.open.open(dbfile)  # Pysal to open DBF
     d = {col: db.by_col(col) for col in db.header}  # Convert dbf to dictionary
     # pandasDF = pd.DataFrame(db[:]) #Convert to Pandas DF
     pandasDF = pandas.DataFrame(d)  # Convert to Pandas DF
@@ -20,6 +22,13 @@ def dbf2DF(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
     db.close()
     return pandasDF
 
+def dbf2DF(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
+    # Load the DBF file
+    # dbf = Dbf5(dbfile)
+    gdf = geopandas.read_file(dbfile)
+    # Convert DBF to DataFrame
+    #return dbf.to_dataframe()
+    return pandas.DataFrame(gdf).drop(columns=["geometry"])
 
 def get_raw_deceases_data(product):
     """

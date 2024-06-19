@@ -9,66 +9,27 @@ tasks:
   - source: tasks.clean.get_clean_deceases_data
     name: get-clean-deceases-data
     params:
+      cause_specific_codes: "{{causes_codes}}"
       age_group_mapping: "{{age_groups}}"
-      analysis_period: "{{analysis_period}}"
     product: _products/clean/cleaned-deceases-data.parquet
-
-  - source: tasks.filter.get_cause_specific_deceases_data
-    name: get-cause-specific-deceases-data
-    params:
-      causeCodes: "{{causes_codes}}"
-    product: _products/filter/get-cause-specific-deceases-data.parquet
-
-  - source: tasks.population.get_clean_population_province_age_group
-    name: get-clean-population-province-age-group
-    product: _products/population/population-province-age-group.parquet
-
-  # Resultados: Tabla 1
-  - source: tasks.generic.mortality.get_csmr_for_divisions
-    name: get-csmr-for-divisions
+ 
+  
+  # #########################
+  # Rates
+  # #########################
+  - source: tasks/rates/get-rates.py
     product:
-      csv: _products/generic/cause-specific-rate-for-divisions.csv
-      latex: _products/generic/cause-specific-rate-for-divisions.tex
+      nb: _products/rates/get-rates.ipynb
+      data: _products/rates/rates.csv
 
-  # #########################
-  # Departamental
-  # #########################
-  - source: tasks.departmental.annual.mortality.get_csmr_by_year
-    name: get-departmental-csmr-by-year
-    product: _products/departmental/mortality/annual/csmr-by-year.parquet
+  - source: tasks/rates/get-rates-departamental.py
+    product:
+      nb: _products/rates/get-departamental-rates.ipynb
+      data: _products/rates/departamental-rates.csv
 
-  - source: tasks.departmental.periodical.mortality.get_csmr_by_periods
-    name: get-departmental-csmr-by-periods
-    params:
-      bins_values: [1990, 1996, 2003, 2010, 2017]
-      bins_labels: ['1990-1996', '1997-2003', '2004-2010', '2011-2017']
-    product: _products/departmental/mortality/periods/csmr-by-periods.parquet
+  - source: tasks/rates-processing/get-presentation-departmental-csmr.py
+    name: get-presentation-departmental-csmr
+    product:
+      nb: _products/rates-processing/get-presentation-departmental-csmr.ipynb
+      data: _products/rates-processing/presentation-departmental-csmr.csv
 
-  - source: tasks.departmental.periodical.mortality_vis.get_csmr_choropleths_by_periods
-    name: get-csmr-choropleths-by-periods
-    product: _products/departmental/mortality/periods/vis-choropleths
-
-  - source: tasks.departmental.periodical.mortality_vis.get_csmr_moran_clustermaps
-    name: get-csmr-moran-clustermap-by-period
-    product: _products/departmental/mortality/periods/vis-moran-clustermaps
-
-  # #########################
-  # Provincial
-  # #########################
-  - source: tasks.provincial.mortality.get_csmr_by_year
-    name: get-provincial-csmr-by-year
-    product: _products/provincial/csmr-by-year.parquet
-
-  # #########################
-  # National
-  # #########################
-  - source: tasks.national.annual.mortality.get_national_csmr
-    name: get-national-csmr-by-year
-    product: _products/national/mortality/annual/csmr.csv
-
-  # Resultados: Tabla 2
-  - source: tasks.national.entire_period.mortality.get_csmr_by_age_group_and_sex
-    name: national-entire-period-get-csmr-by-age-group-and-sex
-    params:
-      age_group_mapping: "{{age_groups}}"
-    product: _products/national/mortality/entire-period/csmr-by-age-group-and-sex.csv

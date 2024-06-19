@@ -2,8 +2,7 @@ _products
 scripts
 
 *__pycache__*
-
-task_notebooks
+*.ipynb_checkpoints*
 
 _env_files
 
