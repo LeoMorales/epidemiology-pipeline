@@ -65,14 +65,14 @@ data.columns
 # %%
 columns_renaming = {
     'period': "PERIODO",
-    'age_group': "RANGO EDADES",    
+    'age_group': "RANGO_EDADES",    
     'sex': "SEXO",
     'region_nombre': 'REGION',
     'provincia_nombre': 'PROVINCIA',
     'department_id': "DEPARTAMENTO",
-    'departamento_nombre': 'DEPARTAMENTO NOMBRE',
-    'deceases': "MUERTES TOTALES",
-    'specific': "MUERTES ALZHEIMER",
+    'departamento_nombre': 'DEPARTAMENTO_NOMBRE',
+    'deceases': "MUERTES_TOTALES",
+    'specific': "MUERTES_ALZHEIMER",
     'rate': "TEA*1000",
 }
 
@@ -98,14 +98,14 @@ complete_df
 groupby_caba = (
     complete_df
         [complete_df['DEPARTAMENTO'].str.slice(0, 2) == "02"]
-        .groupby(["PERIODO", "RANGO EDADES", "SEXO", "REGION", "PROVINCIA"])
+        .groupby(["PERIODO", "RANGO_EDADES", "SEXO", "REGION", "PROVINCIA"])
 )
 
 rows = []
 
 for i, slice_df in groupby_caba:
     # ('1997-2007', '0-64', 'all', 'Centro', 'Ciudad Autónoma de Buenos Aires') + (tuple(a.values))
-    rows.append(i + ("02000", "CABA") + tuple(slice_df[["MUERTES TOTALES", "MUERTES ALZHEIMER"]].sum().values))
+    rows.append(i + ("02000", "CABA") + tuple(slice_df[["MUERTES_TOTALES", "MUERTES_ALZHEIMER"]].sum().values))
 
 # %%
 caba_df = pandas.DataFrame(rows, columns=complete_df.columns[:-1])
@@ -113,7 +113,7 @@ caba_df = pandas.DataFrame(rows, columns=complete_df.columns[:-1])
 caba_df.head(3)
 
 # %%
-caba_df["TEA*1000"] = caba_df["MUERTES ALZHEIMER"] / caba_df["MUERTES TOTALES"] * 1_000
+caba_df["TEA*1000"] = caba_df["MUERTES_ALZHEIMER"] / caba_df["MUERTES_TOTALES"] * 1_000
 
 caba_df.head()
 
@@ -130,7 +130,7 @@ output_df = pandas.concat([complete_df, caba_df])
 output_df = (
     output_df
         .sort_values(
-            by=["PERIODO", "RANGO EDADES", "SEXO", "REGION", "PROVINCIA", "DEPARTAMENTO"]
+            by=["PERIODO", "RANGO_EDADES", "SEXO", "REGION", "PROVINCIA", "DEPARTAMENTO"]
         )
         .reset_index(drop=True)
 )

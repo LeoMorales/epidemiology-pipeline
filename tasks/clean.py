@@ -6,6 +6,7 @@ from surnames_package import cleaning
 from surnames_package import utils
 from epidemiologic import cleanning as epi_cleanning
 
+
 def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_mapping):
     """Devuelve la base completa de fallecimientos.
 
@@ -14,13 +15,13 @@ def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_m
         upstream (_type_): Output
     """
     df_1991_2000 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["1991-2000"])
+        str(upstream["get-raw-deceases-data"]["data_1991_2000"])
     )
     df_2001_2014 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["2001-2014"])
+        str(upstream["get-raw-deceases-data"]["data_2001_2014"])
     )
     df_2015_2017 = pandas.read_parquet(
-        str(upstream["get-raw-deceases-data"]["2015-2017"])
+        str(upstream["get-raw-deceases-data"]["data_2015_2017"])
     )
 
     COLUMNS_MAPPING_2001_2014 = {
@@ -294,7 +295,7 @@ def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_m
             df_2015_2017[common_columns],
         ]
     )
-    
+
     # 06217 es Chascomus antes del 2011, así que homogeneizamos reescribiendo a 06218 (Chascomus actual, y el usado en la capa geográfica)
     df["department_id"] = df["department_id"].replace("06217", "06218")
 
@@ -343,7 +344,7 @@ def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_m
     ]
     df = df[selected_cols]
 
-    df['is_specific'] = df['codigo_defuncion'].isin(cause_specific_codes)
+    df["is_specific"] = df["codigo_defuncion"].isin(cause_specific_codes)
 
     df = df.reset_index(drop=True)
     df.to_parquet(str(product))
@@ -354,6 +355,7 @@ def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_m
 #    profile = ProfileReport(df, title="Clean Data Profiling Report")
 #    profile.to_file(str(product))
 
+
 def get_labeled_deceases_data(upstream, product, period):
     """Filtra todas las defunciones según pertenezcan o no al período
     de analisis.
@@ -363,24 +365,25 @@ def get_labeled_deceases_data(upstream, product, period):
         product (_type_): output
         period (str): año desde y año hasta en formato aaaa-aaaa
     """
-    if '-' not in period:
-        raise ValueError(f'Unsupported period label: {period!r}')
+    if "-" not in period:
+        raise ValueError(f"Unsupported period label: {period!r}")
 
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    df = pandas.read_parquet(str(upstream['get-clean-deceases-data']))
+    df = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
     starting_year, finish_year = period.split("-")
     starting_year = int(starting_year)
     finish_year = int(finish_year)
-    logger.info(f'Filtrando años {starting_year} - {finish_year}')
+    logger.info(f"Filtrando años {starting_year} - {finish_year}")
 
-    df_period = df[
-            (df['year'] >= starting_year) &
-            (df['year'] <= finish_year)
-        ].copy().reset_index(drop=True)
+    df_period = (
+        df[(df["year"] >= starting_year) & (df["year"] <= finish_year)]
+        .copy()
+        .reset_index(drop=True)
+    )
 
-    logger.info('Filtrado finalizado')
+    logger.info("Filtrado finalizado")
     df_period.to_parquet(str(product))
 
 
@@ -395,13 +398,11 @@ def contador_borrar(upstream, product, period):
     """
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
-    logger.info(f'Rama {period}')
-    if period == '2007-2017':
-        df = pandas.read_parquet(
-            str(upstream['get-labeled-deceases-data-2007-2017']))
+    logger.info(f"Rama {period}")
+    if period == "2007-2017":
+        df = pandas.read_parquet(str(upstream["get-labeled-deceases-data-2007-2017"]))
     else:
-        df = pandas.read_parquet(
-            str(upstream['get-labeled-deceases-data-1991-2017']))
+        df = pandas.read_parquet(str(upstream["get-labeled-deceases-data-1991-2017"]))
 
     logger.info(upstream.keys())
     df.to_csv(str(product))
@@ -421,27 +422,30 @@ def work_with_periods(upstream, product, periods):
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    df = pandas.read_parquet(str(upstream['get-clean-deceases-data']))
+    df = pandas.read_parquet(str(upstream["get-clean-deceases-data"]))
 
     for branch in periods:
         starting_year, finish_year = branch.split("-")
         starting_year = int(starting_year)
         finish_year = int(finish_year)
-        logger.info(f'Filtrando años {starting_year} - {finish_year}')
+        logger.info(f"Filtrando años {starting_year} - {finish_year}")
 
-        df_branch = df[
-                (df['year'] >= starting_year) &
-                (df['year'] <= finish_year)
-            ].copy().reset_index(drop=True)
+        df_branch = (
+            df[(df["year"] >= starting_year) & (df["year"] <= finish_year)]
+            .copy()
+            .reset_index(drop=True)
+        )
 
-        logger.info('Filtrado finalizado')
-        df_branch.to_parquet(parent / f'{branch}.parquet')
+        logger.info("Filtrado finalizado")
+        df_branch.to_parquet(parent / f"{branch}.parquet")
+
 
 def many_products_downstream(product, upstream):
-    """
-    """
-    directory = Path(upstream['work_with_periods'])
-    #for p in directory.glob('*')
+    """ """
+    directory = Path(upstream["work_with_periods"])
+    # for p in directory.glob('*')
     #    df = pandas.read_parquet(p)
-    content = '\n'.join([str(pandas.read_parquet(p).shape[0]) for p in directory.glob('*')])
+    content = "\n".join(
+        [str(pandas.read_parquet(p).shape[0]) for p in directory.glob("*")]
+    )
     Path(product).write_text(content)
