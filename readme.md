@@ -11,4 +11,5 @@ Using ploomber pipelines:
 
 ## Pipeline:
 
+![products-and-techstack](./static/repo-image.png)
 ![pipeline](./pipeline.png)
