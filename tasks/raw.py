@@ -1,8 +1,8 @@
 import pysal
 import pandas
 import glob
-from simpledbf import Dbf5
 import geopandas
+
 
 def dbf2DF_deprecated(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
     """
@@ -12,7 +12,7 @@ def dbf2DF_deprecated(dbfile, upper=True):  # Reads in DBF files and returns Pan
     dbfile  : DBF file - Input to be imported
     upper   : Condition - If true, make column heads upper case
     """
-    #db = pysal.lib.io.open.open(dbfile)  # Pysal to open DBF
+    # db = pysal.lib.io.open.open(dbfile)  # Pysal to open DBF
     db = pysal.open.open(dbfile)  # Pysal to open DBF
     d = {col: db.by_col(col) for col in db.header}  # Convert dbf to dictionary
     # pandasDF = pd.DataFrame(db[:]) #Convert to Pandas DF
@@ -22,13 +22,15 @@ def dbf2DF_deprecated(dbfile, upper=True):  # Reads in DBF files and returns Pan
     db.close()
     return pandasDF
 
+
 def dbf2DF(dbfile, upper=True):  # Reads in DBF files and returns Pandas DF
     # Load the DBF file
     # dbf = Dbf5(dbfile)
     gdf = geopandas.read_file(dbfile)
     # Convert DBF to DataFrame
-    #return dbf.to_dataframe()
+    # return dbf.to_dataframe()
     return pandas.DataFrame(gdf).drop(columns=["geometry"])
+
 
 def get_raw_deceases_data(product):
     """
@@ -151,6 +153,6 @@ def get_raw_deceases_data(product):
     df_2015_2017["SEXO"] = df_2015_2017["SEXO"].astype(int)
     df_2015_2017["year"] = df_2015_2017["year"].astype(str)
 
-    df_1991_2000.to_parquet(str(product["1991-2000"]))
-    df_2001_2014.to_parquet(str(product["2001-2014"]))
-    df_2015_2017.to_parquet(str(product["2015-2017"]))
+    df_1991_2000.to_parquet(str(product["data_1991_2000"]))
+    df_2001_2014.to_parquet(str(product["data_2001_2014"]))
+    df_2015_2017.to_parquet(str(product["data_2015_2017"]))

@@ -1,4 +1,5 @@
-# + tags=["parameters"]
+# -*- coding: utf-8 -*-
+# %% tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
 upstream = ["get-clean-deceases-data"]
 
@@ -6,9 +7,9 @@ upstream = ["get-clean-deceases-data"]
 product = None
 
 
-# +
+# %%
 import pandas as pd
-from surnames_package import utils
+from isonymic import utils
 from epidemiologic import rates
 import sys
 import logging
@@ -17,9 +18,9 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 # to log a message, call logger.info
-logger.info('Logging up get-rates-departmental')
-# -
+logger.info("Logging up get-rates-departmental")
 
+# %%
 # Constants
 WORKING_COLUMNS = [
     "codigo_defuncion",
@@ -33,10 +34,12 @@ RANGES_AGE = [(0, 150), (0, 64), (65, 150)]
 PERIODS = [(1997, 2017), (1997, 2007), (2007, 2017)]
 
 
+# %%
 def load_data(file_path):
     return pd.read_parquet(file_path)
 
 
+# %%
 def preprocess_data(df):
     year_min = df[df["is_specific"]]["year"].min()
     year_max = df[df["is_specific"]]["year"].max()
@@ -54,6 +57,7 @@ def preprocess_data(df):
     return all_deceases_df, specific_deceases_df
 
 
+# %%
 def melt_data(df):
     cols_totals = [
         "total_deceases",
@@ -135,14 +139,17 @@ def melt_data(df):
     return tidy_df
 
 
+# %%
 def process_data(all_df, specific_df, periods, ranges_age):
     datasets = []
 
     for year_a, year_b in periods:
-        
+
         logger.info(f"Procesando período {year_a}-{year_b}")
-        
+
         for age_min, age_max in ranges_age:
+
+            logger.info(f"\t>> {age_min}-{age_max}")
             all_subset = all_df[
                 (all_df["year"] >= year_a)
                 & (all_df["year"] <= year_b)
@@ -170,32 +177,24 @@ def process_data(all_df, specific_df, periods, ranges_age):
     return pd.concat(datasets)
 
 
+# %%
 def save_data(df, file_path):
     df.to_csv(file_path, index=False)
 
 
-def rename_columns(df):
-    columns_renaming = {
-        "department_id": "DEPARTAMENTO",
-        "sex": "SEXO",
-        "deceases": "FALLECIMIENTOS TOTALES",
-        "specific": "FALLECIMIENTOS ESPECÍFICOS",
-        "rate": "TASAS POR 1000",
-        "period": "PERIODO",
-        "age_group": "RANGO EDADES",
-    }
-    return df.rename(columns=columns_renaming)
-
-
+# %%
 clean_df = load_data(upstream["get-clean-deceases-data"])
-#data_path = "../../../epidemiology_pipeline/_products/clean/cleaned-deceases-data.parquet"
-#clean_df = load_data(data_path)
+# data_path = "../../../epidemiology_pipeline/_products/clean/cleaned-deceases-data.parquet"
+# clean_df = load_data(data_path)
 
+# %%
 all_deceases_df, specific_deceases_df = preprocess_data(clean_df)
 
+# %%
 output_df = process_data(all_deceases_df, specific_deceases_df, PERIODS, RANGES_AGE)
 
+# %%
 output_df
 
-#output_df = rename_columns(output_df)
+# %%
 save_data(output_df, product["data"])

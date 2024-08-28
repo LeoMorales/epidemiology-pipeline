@@ -1,9 +1,10 @@
 tasks:
 
-  - source: tasks/get_raw_deceases_data.py
+  #- source: tasks/get_raw_deceases_data.py
+  - source: tasks.raw.get_raw_deceases_data
     name: get-raw-deceases-data
     product:
-      nb:  _products/raw/get-raw-deceases-data.ipynb
+      #nb:  _products/raw/get-raw-deceases-data.ipynb
       data_1991_2000: _products/raw/data-deceases-1991-2000.parquet
       data_2001_2014: _products/raw/data-deceases-2001-2014.parquet
       data_2015_2017: _products/raw/data-deceases-2015-2017.parquet
@@ -15,27 +16,26 @@ tasks:
       age_group_mapping: "{{age_groups}}"
     product: _products/clean/cleaned-deceases-data.parquet
  
-  
-  # #########################
-  # Rates
-  # #########################
+  # rates
   - source: tasks/rates/get-rates.py
     product:
       nb: _products/rates/get-rates.ipynb
       data: _products/rates/rates.csv
 
-  - source: tasks/rates/get-rates-departamental.py
+  - source: tasks/rates/get-departamental-csmr.py
     product:
-      nb: _products/rates/get-departamental-rates.ipynb
-      data: _products/rates/departamental-rates.csv
+      nb: _products/rates/get-departamental-csmr.ipynb
+      data: _products/rates/departamental-csmr.csv
 
-  - source: tasks/rates-processing/get-presentation-departmental-csmr.py
-    name: get-presentation-departmental-csmr
+  # vis
+  - source: tasks/rates-processing/get-departmental-csmr-presentation.py
+    name: get-departmental-csmr-presentation
     product:
-      nb: _products/rates-processing/get-presentation-departmental-csmr.ipynb
-      data: _products/rates-processing/presentation-departmental-csmr.csv
+      nb: _products/rates-processing/get-departmental-csmr-presentation.ipynb
+      data: _products/rates-processing/departmental-csmr-presentation.csv
 
-  - source: tasks/vis/plot-departmental-rates-in-choropleths.py
-    name: plot-choropleths
+  - source: tasks/vis/departmental/plot-choropleths-by-sex.py
+    name: plot-departmental-rates-choropleths-by-sex
     product:
-      nb: reportes/vis/plot-departmental-rates-in-choropleths.ipynb
+      nb: _products/reportes/vis/departmental/plot-choropleths-by-sex.ipynb
+      img: _products/reportes/vis/departmental/departmental-rates-choropleths-by-sex-1997-2017.png

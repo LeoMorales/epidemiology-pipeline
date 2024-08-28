@@ -1,5 +1,5 @@
 import pandas
-from surnames_package import utils
+from isonymic import utils
 
 
 # utils functions:
@@ -165,7 +165,7 @@ def get_clean_population_province_age_group(product):
 
         # population_df["province"] = (
         #    population_df["province_id"]
-        #        .map(lambda province_code: utils.PROVINCE_NAME_BY_ID.get(province_code, "NOT-FOUND"))
+        #        .map(lambda province_code: utils.PROVINCE_NAME_BY_ID_DICT.get(province_code, "NOT-FOUND"))
         # )
 
         provincial_data[province_sheet_name] = population_df

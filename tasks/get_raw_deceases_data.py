@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -5,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.16.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -38,7 +39,6 @@ product = None
 # your code here...
 
 # %%
-import pysal
 import pandas
 import glob
 import geopandas
@@ -78,6 +78,7 @@ for path in paths:
     df_i = dbf2DF(path)
     df_i["year"] = year
     dataframes[year] = df_i
+    print(f"{year} readed!")
     logger.info(f"{year} readed!")
 
 df_1991_2000 = pandas.concat([dataframes[str(key)] for key in range(1991, 2001)])

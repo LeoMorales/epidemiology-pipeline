@@ -1,13 +1,19 @@
-# + tags=["parameters"]
+# -*- coding: utf-8 -*-
+
+# %% tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
-upstream = None
+upstream = ["get-departmental-csmr-presentation"]
 
-# -
+# This is a placeholder, leave it as None
+product = None
 
+
+# %%
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
+# %%
 # Constants
 SHAPE_PATH = "/home/lmorales/work/pipelines/resources/departamentos.geojson"
 CRS_DESTINO = "EPSG:22185"
@@ -26,11 +32,13 @@ COLUMNAS_SELECCIONADAS = [
 ]
 
 
+# %%
 def load_data(data_path):
     """Load the CSV data."""
     return pd.read_csv(data_path, dtype={"DEPARTAMENTO": object})
 
 
+# %%
 def load_shapefile(shape_path):
     """Load and reproject the shapefile."""
     shape = gpd.read_file(shape_path)
@@ -38,6 +46,7 @@ def load_shapefile(shape_path):
     return shape
 
 
+# %%
 def filter_data(data, age_range, sex, period):
     """Filter data based on age range, sex, and period."""
     return (
@@ -51,6 +60,7 @@ def filter_data(data, age_range, sex, period):
     )
 
 
+# %%
 def merge_data(shape, data, left_on, right_on):
     """Merge shape and dataframes."""
     return pd.merge(
@@ -58,6 +68,7 @@ def merge_data(shape, data, left_on, right_on):
     )
 
 
+# %%
 def prepare_shape_df(shape_df, columns):
     """Prepare shape dataframe for plotting."""
     shape_df.columns = [col.upper() for col in shape_df.columns]
@@ -71,25 +82,28 @@ def prepare_shape_df(shape_df, columns):
     return shape_df
 
 
+# %%
 def plot_data(shape_df, title, ax):
     """Plot the data on a map."""
+    shape_df[shape_df["MUERTES_ALZHEIMER"].isna()].plot(
+        ax=ax, color="None", edgecolor="#4d4d4d", linewidth=0.75
+    )
+
     shape_df.plot(
         column="TEA*1000",
         ax=ax,
         legend=True,
         cmap="Oranges",
         edgecolor="#000000",
-        linewidth=0.1,
+        linewidth=0.25,
         legend_kwds={"shrink": 0.3},
-    )
-    shape_df[shape_df["MUERTES_ALZHEIMER"] == 0].plot(
-        ax=ax, color="None", edgecolor="#4d4d4d", linewidth=0.75
     )
     ax.set_axis_off()
     ax.set_title(title)
 
 
-def main(data_path, shape_path):
+# %%
+def main(data_path, shape_path, output_file):
     # Load data and shapefile
     data = load_data(data_path)
     shape = load_shapefile(shape_path)
@@ -124,9 +138,15 @@ def main(data_path, shape_path):
         ha="center",
         y=0.94,
     )
+
+    plt.savefig(output_file, dpi=300)
     plt.show()
+    plt.close()
 
 
+# %%
 if __name__ == "__main__":
-    DATA_PATH = "/home/lmorales/work/pipelines/epidemiology/epidemiology_pipeline/_products/rates-processing/presentation-departmental-csmr.csv"
-    main(DATA_PATH, SHAPE_PATH)
+    # DATA_PATH = "/home/lmorales/work/pipelines/epidemiology/epidemiology_pipeline/_products/rates-processing/presentation-departmental-csmr.csv"
+    DATA_PATH = str(upstream["get-departmental-csmr-presentation"]["data"])
+    output_file_name = str(product["img"])
+    main(DATA_PATH, SHAPE_PATH, output_file=output_file_name)

@@ -3,7 +3,7 @@ import logging
 import shutil
 from pathlib import Path
 from surnames_package import cleaning
-from surnames_package import utils
+from isonymic import utils
 from epidemiologic import cleanning as epi_cleanning
 
 
@@ -319,7 +319,7 @@ def get_clean_deceases_data(product, upstream, cause_specific_codes, age_group_m
         .map(lambda sex_code: SEX_CODE_MAPPING.get(sex_code, "undetermined"))
     )
 
-    codigos_provincia_validos = list(utils.PROVINCE_NAME_BY_ID.keys())
+    codigos_provincia_validos = list(utils.PROVINCE_NAME_BY_ID_DICT.keys())
     df = df[df["provincia_id"].isin(codigos_provincia_validos)]
 
     # asignar etiqueta de grupo etario
