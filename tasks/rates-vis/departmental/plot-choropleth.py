@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 # %% tags=["parameters"]
 # declare a list tasks whose products you want to use as inputs
 upstream = ["get-departmental-csmr-presentation"]
@@ -47,7 +46,7 @@ def load_shapefile(shape_path):
 
 
 # %%
-def filter_data(data, age_range, sex, period):
+def filter_data(data, period, age_range, sex):
     """Filter data based on age range, sex, and period."""
     return (
         data[
@@ -100,6 +99,78 @@ def plot_data(shape_df, title, ax):
     )
     ax.set_axis_off()
     ax.set_title(title)
+
+
+# %%
+DATA_PATH = "/home/lmorales/work/pipelines/epidemiology/epidemiology_pipeline/_products/rates-processing/departmental-csmr-presentation.csv"
+#DATA_PATH = str(upstream["get-departmental-csmr-presentation"]["data"])
+
+data_path = DATA_PATH
+shape_path = SHAPE_PATH
+
+# Load data and shapefile
+data = load_data(data_path)
+shape = load_shapefile(shape_path)
+
+# Filter data for different demographics
+df_1997_2017_female = filter_data(data, "1997-2017", "65-150", "female")
+df_1997_2017_male = filter_data(data, "1997-2017", "65-150", "male")
+df_1997_2017_all = filter_data(data, "1997-2017", "65-150", "all")
+
+# Merge data with shapefile
+shape_female = merge_data(
+    shape, df_1997_2017_female, "departamento_id", "DEPARTAMENTO"
+)
+shape_male = merge_data(shape, df_1997_2017_male, "departamento_id", "DEPARTAMENTO")
+shape_all = merge_data(shape, df_1997_2017_all, "departamento_id", "DEPARTAMENTO")
+
+# Prepare shape dataframes for plotting
+shape_female = prepare_shape_df(shape_female, COLUMNAS_SELECCIONADAS)
+shape_male = prepare_shape_df(shape_male, COLUMNAS_SELECCIONADAS)
+shape_all = prepare_shape_df(shape_all, COLUMNAS_SELECCIONADAS)
+
+
+# %%
+shape_all.head()
+
+# %%
+df_1997_2017_all.shape
+
+# %%
+df_1997_2017_all.head()
+
+# %%
+df_1997_2017_all["PROVINCIA"].unique()
+
+# %%
+df_1997_2017_all[df_1997_2017_all["PROVINCIA"] == "Buenos Aires"].sort_values(
+    by="MUERTES_TOTALES", ascending=False
+)
+
+# %%
+data.head()
+
+# %%
+
+# %%
+
+# Plot data
+f, ax = plt.subplots(ncols=3, nrows=1, figsize=(24, 12))
+shapes = [shape_female, shape_male, shape_all]
+titles = ["Sexo mujeres", "Sexo varones", "Ambos sexos"]
+
+for ax, shape, title in zip(ax.flatten(), shapes, titles):
+    plot_data(shape, title, ax)
+
+plt.suptitle(
+    "TEA*1000 por departamentos; Rango etario: mayores de 64 años; Periodo: 1997-2017",
+    ha="center",
+    y=0.94,
+)
+
+plt.savefig(output_file, dpi=300)
+plt.show()
+plt.close()
 
 
 # %%

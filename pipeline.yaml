@@ -27,15 +27,15 @@ tasks:
       nb: _products/rates/get-departamental-csmr.ipynb
       data: _products/rates/departamental-csmr.csv
 
-  # vis
-  - source: tasks/rates-processing/get-departmental-csmr-presentation.py
-    name: get-departmental-csmr-presentation
+  - source: tasks/rates-processing/merge-and-rename-departmental-csmr.py
+    name: merge-and-rename-departmental-csmr
     product:
-      nb: _products/rates-processing/get-departmental-csmr-presentation.ipynb
-      data: _products/rates-processing/departmental-csmr-presentation.csv
+      nb: _products/rates-processing/merge-and-rename-departmental-csmr.ipynb
+      data: _products/rates-processing/departmental-csmr-merged-and-renamed.csv
 
-  - source: tasks/vis/departmental/plot-choropleths-by-sex.py
-    name: plot-departmental-rates-choropleths-by-sex
+  # rates-vis
+  - source: tasks/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017.py
+    name: plot-choropleths-with-departmental-rates-by-sex-1997-2017
     product:
-      nb: _products/reportes/vis/departmental/plot-choropleths-by-sex.ipynb
-      img: _products/reportes/vis/departmental/departmental-rates-choropleths-by-sex-1997-2017.png
+      nb: _products/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017.ipynb
+      img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-sex-1997-2017.png
