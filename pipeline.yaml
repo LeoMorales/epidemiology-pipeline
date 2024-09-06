@@ -1,14 +1,14 @@
 tasks:
 
-  #- source: tasks/get_raw_deceases_data.py
+  # raw
   - source: tasks.raw.get_raw_deceases_data
     name: get-raw-deceases-data
     product:
-      #nb:  _products/raw/get-raw-deceases-data.ipynb
       data_1991_2000: _products/raw/data-deceases-1991-2000.parquet
       data_2001_2014: _products/raw/data-deceases-2001-2014.parquet
       data_2015_2017: _products/raw/data-deceases-2015-2017.parquet
 
+  # clean
   - source: tasks.clean.get_clean_deceases_data
     name: get-clean-deceases-data
     params:
