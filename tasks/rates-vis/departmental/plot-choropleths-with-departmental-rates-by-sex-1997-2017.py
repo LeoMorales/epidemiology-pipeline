@@ -433,13 +433,15 @@ for ax, shape, title in zip(ax.flatten(), shapes, titles):
 
 
 plt.suptitle(
-    "TEA*1000 por departamentos; Rango etario: mayores de 64 años; Periodo: 1997-2017",
+    "",
     ha="center",
     y=0.95,
 )
 
 output_file_name = str(product["img"])
 plt.savefig(output_file_name, dpi=300)
+
+plt.show()
 plt.close()
 
 # %%

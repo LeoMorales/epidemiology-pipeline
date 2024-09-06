@@ -39,3 +39,9 @@ tasks:
     product:
       nb: _products/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017.ipynb
       img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-sex-1997-2017.png
+
+  - source: tasks/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.py
+    name: plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap
+    product:
+      nb: _products/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.ipynb
+      img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.png
