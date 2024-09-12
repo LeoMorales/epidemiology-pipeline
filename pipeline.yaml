@@ -16,6 +16,12 @@ tasks:
       age_group_mapping: "{{age_groups}}"
     product: _products/clean/cleaned-deceases-data.parquet
  
+  - source: tasks/clean/get-departamental-deceases-tidy-df.py
+    name: get-departamental-deceases-tidy-df
+    product:
+      nb: _products/clean/departamental-deceases-tidy-df.ipynb
+      data: _products/clean/departamental-deceases-tidy-df.parquet
+  
   # rates
   - source: tasks/rates/get-rates.py
     product:
