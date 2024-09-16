@@ -39,9 +39,6 @@ from matplotlib.cm import ScalarMappable
 
 # %%
 
-DATA_PATH: str = (
-    "/home/lmorales/work/pipelines/epidemiology/epidemiology_pipeline/_products/clean/departamental-deceases-tidy-df.parquet"
-)
 DATA_PATH: str = str(upstream["get-departamental-deceases-tidy-df"]["data"])
 SHAPE_PATH: str = "/home/lmorales/work/pipelines/resources/departamentos.geojson"
 CRS_DESTINO: str = "EPSG:22185"
@@ -56,7 +53,7 @@ RATE_COLUMN: str = "rate"
 
 
 # %%
-def asignar_etiquetas_periodos(
+def assign_period_labels(
     df: pd.DataFrame, period_bins: List[int], period_labels: List[str]
 ) -> pd.DataFrame:
     """
@@ -261,6 +258,7 @@ def plot_data(
     label_column: Optional[str] = None,
     label_font_size: int = 8,
     geometry_column: str = "geometry",
+    windrose: bool = True,
 ) -> plt.Axes:
     """
     Plotea los datos en un mapa con un colormap unificado.
@@ -320,7 +318,55 @@ def plot_data(
         ),
     )
 
+    if windrose:
+        add_windrose(ax)
+
     return im
+
+
+def add_windrose(
+    ax: plt.Axes, position: Tuple[float, float] = (0.8, 0.1), size: float = 0.05
+) -> None:
+    """Adds a windrose (compass rose) to the map."""
+    x, y = position
+    windrose_radius = size
+    directions = ["S", "W", "N", "E"]
+    offsets = [
+        (0, windrose_radius),
+        (windrose_radius, 0),
+        (0, -windrose_radius),
+        (-windrose_radius, 0),
+    ]
+
+    for dir_text, (dx, dy) in zip(directions, offsets):
+        ax.annotate(
+            dir_text,
+            xy=(x + dx, y + dy),
+            xytext=(x - dx * 1.5, y - dy * 1.5),
+            ha="center",
+            va="center",
+            fontsize=12,
+            fontweight="bold",
+            color="darkgrey",
+            arrowprops=dict(facecolor="darkgrey", shrink=0.5, width=1.25, headwidth=5),
+            xycoords=ax.transAxes,
+        )
+
+    ax.plot(x, y, "o", color="black", transform=ax.transAxes, markersize=4)
+    ax.plot(
+        [x - windrose_radius * 0.7, x + windrose_radius * 0.7],
+        [y - windrose_radius * 0.7, y + windrose_radius * 0.7],
+        color="black",
+        linewidth=0.5,
+        transform=ax.transAxes,
+    )
+    ax.plot(
+        [x - windrose_radius * 0.7, x + windrose_radius * 0.7],
+        [y + windrose_radius * 0.7, y - windrose_radius * 0.7],
+        color="black",
+        linewidth=0.5,
+        transform=ax.transAxes,
+    )
 
 
 # %%
@@ -391,7 +437,7 @@ if __name__ == "__main__":
     period_labels: List[str] = ["1997-2003", "2004-2010", "2011-2017"]
 
     # Asignar los períodos al DataFrame
-    data = asignar_etiquetas_periodos(data, period_bins, period_labels)
+    data = assign_period_labels(data, period_bins, period_labels)
 
     # Calcular las tasas
     grouped_data: pd.DataFrame = (
@@ -432,8 +478,6 @@ if __name__ == "__main__":
         basemap_path=BASEMAP_PATH,
         rate_column=RATE_COLUMN,
         fig_size=(12, 6),
-        cbar_position=[0.3, 0.05, 0.4, 0.03],  # Posición para el colorbar
+        cbar_position=[0.3, -0.05, 0.4, 0.03],  # Posición para el colorbar
         output_file=str(product["img"]),
     )
-
-# %%

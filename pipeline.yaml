@@ -39,6 +39,12 @@ tasks:
       nb: _products/rates-processing/merge-and-rename-departmental-csmr.ipynb
       data: _products/rates-processing/departmental-csmr-merged-and-renamed.csv
 
+  - source: tasks/rates-processing/get-csmr-by-year-and-age-group.py
+    name: get-csmr-by-year-and-age-group
+    product:
+      nb: _products/rates-processing/get-csmr-by-year-and-age-group.ipynb
+      data: _products/rates-processing/csmr-by-year-and-age-group.csv
+
   # rates-vis
   - source: tasks/rates-vis/departmental/plot-choropleths-with-csmr-by-sex-1997-2017.py
     name: plot-choropleths-with-csmr-by-sex-1997-2017
