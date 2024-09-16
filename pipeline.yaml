@@ -40,14 +40,20 @@ tasks:
       data: _products/rates-processing/departmental-csmr-merged-and-renamed.csv
 
   # rates-vis
-  - source: tasks/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017.py
-    name: plot-choropleths-with-departmental-rates-by-sex-1997-2017
+  - source: tasks/rates-vis/departmental/plot-choropleths-with-csmr-by-sex-1997-2017.py
+    name: plot-choropleths-with-csmr-by-sex-1997-2017
     product:
-      nb: _products/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017.ipynb
+      nb: _products/rates-vis/departmental/plot-choropleths-with-csmr-by-sex-1997-2017.ipynb
       img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-sex-1997-2017.png
 
-  - source: tasks/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.py
-    name: plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap
+  - source: tasks/rates-vis/departmental/plot-choropleths-with-csmr-by-sex-1997-2017-shared-colormap.py
+    name: plot-choropleths-with-csmr-by-sex-1997-2017-shared-colormap
     product:
-      nb: _products/rates-vis/departmental/plot-choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.ipynb
+      nb: _products/rates-vis/departmental/plot-choropleths-with-csmr-by-sex-1997-2017-shared-colormap.ipynb
       img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-sex-1997-2017-shared-colormap.png
+
+  - source: tasks/rates-vis/departmental/plot-choropleths-with-csmr-by-periods.py
+    name: plot-choropleths-with-csmr-by-periods
+    product:
+      nb: _products/rates-vis/departmental/plot-choropleths-with-csmr-by-periods.ipynb
+      img: _products/rates-vis/departmental/choropleths-with-departmental-rates-by-periods.png
